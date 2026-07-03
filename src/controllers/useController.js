@@ -1,4 +1,4 @@
-const { addUser, getUsers: getUsersService, getUserById: getUserByIdService, updateUser: updateUserService, deleteUser: deleteUserService } = require("../services/userService");
+const { addUser, getUsers: getUsersService, getUserById: getUserByIdService, updateUser: updateUserService } = require("../services/userService");
 
 const getUsers = async (req, res) => {
     try {
@@ -34,7 +34,7 @@ const postUsers = async (req, res) => {
             userId: userId
         });
     } catch (error) {
-        console.error('Error in postUsers:', error);
+        console.error('Error in postUsers:', error.message);
         return res.status(500).json({
             error: 'Internal Server Error',
             success: false,
@@ -44,43 +44,4 @@ const postUsers = async (req, res) => {
 
 };
 
-const updateUser = async (req, res) => {
-    try {
-        const userId = req.params.id;
-        const user = await getUserByIdService(userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        const updatedUserData = req.body;
-        await updateUserService(userId, updatedUserData);
-        res.json({ message: 'User updated successfully' });
-    } catch (error) {
-        console.error('Error in updateUser:', error);
-        return res.status(500).json({
-            error: 'Internal Server Error',
-            success: false,
-            message: error.message
-        });
-    }
-};
-
-const deleteUser = async (req, res) => {
-    try {
-        const userId = req.params.id;
-        const user = await getUserByIdService(userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        await deleteUserService(userId);
-        res.json({ message: 'User deleted successfully' });
-    } catch (error) {
-        console.error('Error in deleteUser:', error);
-        return res.status(500).json({
-            error: 'Internal Server Error',
-            success: false,
-            message: error.message
-        });
-    }
-};
-
-module.exports = { getUsers, getUserById, postUsers, updateUser, deleteUser };
+module.exports = { getUsers, getUserById, postUsers };

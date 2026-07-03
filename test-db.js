@@ -6,10 +6,8 @@ const testConnection = async () => {
     try {
         console.log('Attempting connection with encoded URI...');
         
-        const encodedPassword = encodeURIComponent(process.env.DB_PASSWORD);
-        const uri = process.env.uri;
+        const uri = process.env.DB_URI;
         
-        console.log('URI (password hidden):', uri.replace(encodedPassword, '****'));
         
         const connection = await mysql.createConnection(uri);
 

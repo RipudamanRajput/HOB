@@ -2,8 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
-const { router } = require('./routes/useRoutes');
+const { userRouter } = require('./routes/useRoutes');
 const authRoutes = require('./routes/authRoutes');
+const { customerRouter } = require('./routes/customerRoutes');
 
 let passportInitialized = false;
 
@@ -56,7 +57,8 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api/users', router);
+app.use('/api/users', userRouter);
+app.use('/api/customers', customerRouter);
 
 
 module.exports = app;

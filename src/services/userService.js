@@ -45,18 +45,4 @@ const getUserById = async (userId) => {
     return user;
 }
 
-const updateUser = async (userId, userData) => {
-    const User = getUser();
-    await User.update(userData, {
-        where: { id: userId }
-    });
-}
-
-const deleteUser = async (userId) => {
-    const User = getUser();
-    await User.destroy({
-        where: { id: userId }
-    });
-}
-
-module.exports = { addUser, getUsers, getUserById, updateUser, deleteUser };
+module.exports = { addUser, getUsers, getUserById };

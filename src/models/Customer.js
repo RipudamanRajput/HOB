@@ -33,7 +33,8 @@ const initializeCustomer = () => {
         },
         googleId: {
             type: DataTypes.STRING,
-            unique: true
+            unique: true,
+            allowNull: true
         },
         avatar: {
             type: DataTypes.STRING,
@@ -41,11 +42,12 @@ const initializeCustomer = () => {
         },
         name: {
             type: DataTypes.STRING,
-            unique: false
+            unique: false,
+            allowNull: false
         },
-        contactNo: {
+        contactNumber: {
             type: DataTypes.STRING,
-            unique: false
+            unique: false,
         },
         email: {
             type: DataTypes.STRING,
@@ -71,7 +73,7 @@ const initializeCustomer = () => {
             type: DataTypes.ENUM('Male', 'Female'),
             allowNull: false
         },
-        petsize: {
+        petSize: {
             type: DataTypes.ENUM('Small', 'Medium', 'Large'),
             allowNull: false
         },
@@ -127,4 +129,4 @@ const getCustomer = () => {
     return Customer;
 };
 
-module.exports = { Customer: getCustomer, initializeCustomer };
+module.exports = { Customer: getCustomer, initializeCustomer, PetTypes, behavioralIssues };
