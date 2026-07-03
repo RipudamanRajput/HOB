@@ -1,0 +1,47 @@
+const { DataTypes } = require('sequelize');
+const { getSequelize } = require('../config/db');
+
+let User = null;
+
+const initializeUser = () => {
+  const sequelize = getSequelize();
+
+  User = sequelize.define('User', {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
+    googleId: {
+      type: DataTypes.STRING,
+      unique: true
+    },
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    avatar: {
+      type: DataTypes.STRING
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    }
+  });
+
+  return User;
+};
+
+const getUser = () => {
+  if (!User) {
+    return initializeUser();
+  }
+  return User;
+};
+
+module.exports = { User: getUser, initializeUser };

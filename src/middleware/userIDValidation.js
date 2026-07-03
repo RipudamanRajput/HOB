@@ -1,0 +1,28 @@
+
+const userIDValidation  = (schema) => (req, res, next) => {
+    try {
+        const result = schema.safeParse(req.params.id);
+        if (!result.success) {
+            const errors = JSON.parse(result.error.message).map(err => ({
+                field: err.path[0] || 'unknown',
+                message: err.message,
+                code: err.code
+            }));
+            return res.status(400).json({
+                success: false,
+                message: 'ID Validation failed',
+                errors:errors
+            });
+        }
+        req.params.id = result.data;
+        return next();
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+}
+
+module.exports = { userIDValidation };
