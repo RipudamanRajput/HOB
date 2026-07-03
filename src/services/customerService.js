@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { Customer: getCustomer } = require("../models/Customer");
 
 const addCustomerService = async (customerData) => {
