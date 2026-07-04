@@ -17,6 +17,7 @@ const userIDValidation  = (schema) => (req, res, next) => {
         req.params.id = result.data;
         return next();
     } catch (error) {
+        console.error('Error in userIDValidation middleware:', error.message);
         return res.status(500).json({
             success: false,
             message: 'Internal server error',

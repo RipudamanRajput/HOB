@@ -1,8 +1,9 @@
 const { z } = require('zod');
-const { PetTypes, behavioralIssues } = require("../models/Customer");
+const { behavioralIssues, PetTypes } = require('../config/pets');
 
 
 const createCustomerSchema = z.object({
+    userId: z.string().uuid(),
     name: z.string().min(2).max(100),
     contactNumber: z.string().max(15),
     email: z.string().email(),

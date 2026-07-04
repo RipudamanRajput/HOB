@@ -17,6 +17,7 @@ const payloadValidation  = (schema) => (req, res, next) => {
         req.body = result.data;
         return next();
     } catch (error) {
+        console.error('Error in payloadValidation middleware:', error.message);
         return res.status(500).json({
             success: false,
             message: 'Internal server error',

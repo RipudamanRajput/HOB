@@ -1,29 +1,13 @@
 const { DataTypes } = require('sequelize');
 const { getSequelize } = require('../config/db');
-const { prettifyError } = require('zod/v4/core');
+const { User: getUser } = require('./User');
+const { behavioralIssues, PetTypes } = require('../config/pets');
 
 let Customer = null;
-let PetTypes = [
-    "Dog",
-    "Cat",
-    "Bird",
-    "Rabbit",
-    "Hamster"
-];
-let behavioralIssues = [
-    "No",
-    "Yes",
-    "Aggression",
-    "Anxiety",
-    "Resource Gaurding",
-    "Food Agression",
-    "Fear",
-    "Other"
-];
-
 
 const initializeCustomer = () => {
     const sequelize = getSequelize();
+    const User = getUser();
 
     Customer = sequelize.define('Customer', {
         id: {
@@ -31,14 +15,16 @@ const initializeCustomer = () => {
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
         },
-        googleId: {
-            type: DataTypes.STRING,
+        userId: {
+            type: DataTypes.UUID,
             unique: true,
-            allowNull: true
-        },
-        avatar: {
-            type: DataTypes.STRING,
-            allowNull: true
+            allowNull: true,
+            references: {
+                model: 'Users',
+                key: 'id'
+            },
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
         },
         name: {
             type: DataTypes.STRING,
@@ -118,7 +104,8 @@ const initializeCustomer = () => {
             defaultValue: DataTypes.NOW
         }
     });
-
+    Customer.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+    User.hasOne(Customer, { foreignKey: 'userId', as: 'customer' });
     return Customer;
 };
 
@@ -129,4 +116,4 @@ const getCustomer = () => {
     return Customer;
 };
 
-module.exports = { Customer: getCustomer, initializeCustomer, PetTypes, behavioralIssues };
+module.exports = { Customer: getCustomer, initializeCustomer };

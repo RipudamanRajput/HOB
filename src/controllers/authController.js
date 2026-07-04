@@ -16,7 +16,14 @@ const googleCallback = async (req, res) => {
         const token = generateToken(user);
         res.json({
             token,
-            expiresIn
+            expiresIn,
+            user:{
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                googleId: user.googleId,
+                avatar: user.avatar
+            }
         });
         // Redirect to frontend with token
         // res.redirect(`http://localhost:3000/auth-success?token=${token}`);
@@ -25,19 +32,5 @@ const googleCallback = async (req, res) => {
     }
 };
 
-const logout = (req, res) => {
-    req.logout(function (err) {
-        if (err) {
-            return next(err);
-        }
 
-        req.session.destroy(() => {
-            res.json({
-                success: true,
-                message: "Logged out"
-            });
-        });
-    });
-};
-
-module.exports = { generateToken, googleCallback, logout };
+module.exports = { generateToken, googleCallback };

@@ -25,7 +25,6 @@ const getCustomersService = async (page = 1, limit = 10, name = '', email = '') 
         where,
         limit,
         offset
-        // attributes: ['id', 'name', 'contactNumber', 'email', 'petProfile', 'petType', 'petName', 'petAge', 'petGender', 'petSize', 'vaccinationDate', 'tickTreatmentStatus', 'tickTreatmentDate', 'healthIssues', 'healthIssuesDescription', 'medicalHistory', 'medicalHistoryDescription', 'behavioralIssues', 'behavioralIssuesDescription']
     });
 
     return {
