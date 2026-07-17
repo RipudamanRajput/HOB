@@ -27,4 +27,22 @@ let amenities = [
     'Other'
 ]
 
-module.exports = { PetTypes, behavioralIssues, amenities };
+let bookingType = [
+    'hourly',
+    'daily',
+    'multidays'
+]
+
+let bookingStatus = [
+    'completed',
+    'confirmed',
+    'initiated',
+    'pending'
+]
+
+let hostStatus = [
+    'verified',
+    'unverified',
+    'rejected'
+]
+module.exports = { hostStatus, bookingStatus, PetTypes, behavioralIssues, amenities, bookingType };

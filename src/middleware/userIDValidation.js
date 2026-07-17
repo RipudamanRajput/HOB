@@ -1,5 +1,6 @@
+const { getUserById } = require("../services/userService");
 
-const userIDValidation  = (schema) => (req, res, next) => {
+const IDValidation = (schema) => (req, res, next) => {
     try {
         const result = schema.safeParse(req.params.id);
         if (!result.success) {
@@ -11,10 +12,38 @@ const userIDValidation  = (schema) => (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'ID Validation failed',
-                errors:errors
+                errors: errors
             });
         }
         req.params.id = result.data;
+        return next();
+    } catch (error) {
+        console.error('Error in IDValidation middleware:', error.message);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+}
+
+const userIDValidation =  (schema) => async(req, res, next) => {
+    try {
+        const userId = req.query.userId
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: "?userId query param is needed"
+            })
+        }
+        const user = await getUserById(userId)
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: `userId Validation failed: ${userId} `
+            })
+        }
+        req.params.userId = userId;
         return next();
     } catch (error) {
         console.error('Error in userIDValidation middleware:', error.message);
@@ -26,4 +55,4 @@ const userIDValidation  = (schema) => (req, res, next) => {
     }
 }
 
-module.exports = { userIDValidation };
+module.exports = { IDValidation, userIDValidation };

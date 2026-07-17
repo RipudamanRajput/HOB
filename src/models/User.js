@@ -21,6 +21,10 @@ const initializeUser = () => {
       unique: true,
       allowNull: false
     },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false

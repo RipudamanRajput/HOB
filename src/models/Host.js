@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const { getSequelize } = require("../config/db")
 const { User: getUser } = require('./User');
-const { PetTypes, amenities } = require("../config/pets");
+const { PetTypes, amenities, hostStatus } = require("../config/pets");
 
 let Host = null;
 
@@ -25,6 +25,11 @@ const initializeHost = () => {
             },
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
+        },
+        status: {
+            type: DataTypes.ENUM(...hostStatus),
+            defaultValue: 'unverified',
+            allowNull: false
         },
         name: {
             type: DataTypes.STRING,
@@ -141,6 +146,26 @@ const initializeHost = () => {
                 }
             }
         },
+        pricePerPet: {
+            type: DataTypes.JSON,
+            allowNull: false,
+            validate: {
+                isValidAmenities(value) {
+                    if (!Array.isArray(value)) {
+                        throw new Error("Amenities must be an array.");
+                    }
+                    value.forEach(item => {
+                        if (!PetTypes.includes(item.petType)) {
+                            throw new Error(`Invalid petType: ${item.petType}`);
+                        }
+
+                        if (typeof item.price !== "number") {
+                            throw new Error("price must be a number");
+                        }
+                    });
+                }
+            }
+        },
         sizeOfRooms: {
             type: DataTypes.JSON,
             allowNull: false,
@@ -184,12 +209,12 @@ const initializeHost = () => {
             type: DataTypes.TEXT,
             allowNull: true
         },
-        propertyAreaSize: {
-            type: DataTypes.FLOAT,
-            allowNull: false
-        },
         propertyAreaType: {
             type: DataTypes.ENUM('Square Feet', 'Square Meters'),
+            allowNull: false
+        },
+        propertyAreaSize: {
+            type: DataTypes.FLOAT,
             allowNull: false
         },
         amenities: {
@@ -199,6 +224,22 @@ const initializeHost = () => {
         paidAmenities: {
             type: DataTypes.JSON,
             allowNull: true,
+            validate: {
+                isValidCapacity(value) {
+                    if (!Array.isArray(value)) {
+                        throw new Error("Capacity must be an array.");
+                    }
+                    value.forEach(item => {
+                        if (!amenities.includes(item.amenitie)) {
+                            throw new Error(`Invalid amenity: ${item.amenitie}`);
+                        }
+
+                        if (typeof item.price !== "number") {
+                            throw new Error("price must be a number");
+                        }
+                    });
+                }
+            }
         },
         fareAccordingToPetSize: {
             type: DataTypes.BOOLEAN,

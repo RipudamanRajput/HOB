@@ -2,6 +2,8 @@ const { addCustomerService, getCustomersService, getCustomerByIdService } = requ
 
 
 const addCustomer = async (req, res) => {
+    const { userId } = req.params;
+    req.body.userId = userId;
     try {
         const customerId = await addCustomerService(req.body);
         res.status(201).json({
@@ -10,7 +12,7 @@ const addCustomer = async (req, res) => {
             customerId: customerId
         });
     } catch (error) {
-        console.error('Error in addCustomer:', error.message);
+        console.error('Error in addCustomer Controller:', error);
         res.status(500).json({
             message: 'Error creating customer',
             success: false,
@@ -25,7 +27,7 @@ const getCustomers = async (req, res) => {
         const customers = await getCustomersService(page, limit, name, email);
         res.status(200).json({ success: true, customers: customers });
     } catch (error) {
-        console.error('Error in getCustomers:', error.message);
+        console.error('Error in getCustomers Controller:', error);
         res.status(500).json({
             message: 'Error fetching customers',
             success: false,
@@ -43,7 +45,7 @@ const getCustomerById = async (req, res) => {
         }
         res.status(200).json({ success: true, customer: customer });
     } catch (error) {
-        console.error('Error in getCustomerById:', error.message);
+        console.error('Error in getCustomerById Controller:', error.message);
         res.status(500).json({
             message: 'Error fetching customer',
             success: false,

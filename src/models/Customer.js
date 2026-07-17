@@ -40,65 +40,6 @@ const initializeCustomer = () => {
             unique: true,
             allowNull: false
         },
-        petProfile: {
-            type: DataTypes.STRING
-        },
-        petType: {
-            type: DataTypes.ENUM(...PetTypes),
-            allowNull: false
-        },
-        petName: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        petAge: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        petGender: {
-            type: DataTypes.ENUM('Male', 'Female'),
-            allowNull: false
-        },
-        petSize: {
-            type: DataTypes.ENUM('Small', 'Medium', 'Large'),
-            allowNull: false
-        },
-        vacinationdate: {
-            type: DataTypes.DATE,
-            allowNull: true
-        },
-        tickTreatmentStatus: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
-        tickTreatmentDate: {
-            type: DataTypes.DATE,
-            allowNull: true
-        },
-        healthIssues: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
-        healthIssuesDescription: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        medicalHistory: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
-        medicalHistoryDescription: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        behavioralIssues: {
-            type: DataTypes.ENUM(...behavioralIssues),
-            allowNull: false
-        },
-        behavioralIssuesDescription: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
         createdAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
