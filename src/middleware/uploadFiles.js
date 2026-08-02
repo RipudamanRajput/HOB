@@ -1,0 +1,106 @@
+const cloudinary = require("../config/cloudinary");
+const streamifier = require("streamifier");
+
+const uploadFileHostGallery = (file) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                folder: "host-gallery",
+                resource_type: "auto",
+            },
+            (error, result) => {
+                if (error) return reject(error);
+
+                resolve({
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    type: result.resource_type,
+                    format: result.format,
+                });
+            }
+        );
+
+        streamifier.createReadStream(file.buffer).pipe(stream);
+    });
+};
+
+const uploadFileforhostverification = (file) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                folder: "host-Id-proofs",
+                resource_type: "auto",
+            },
+            (error, result) => {
+                if (error) return reject(error);
+
+                resolve({
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    type: result.resource_type,
+                    format: result.format,
+                });
+            }
+        );
+
+        streamifier.createReadStream(file.buffer).pipe(stream);
+    });
+};
+
+const uploadHostfiles = async (req, res, next) => {
+    try {
+        if (!req.files) {
+            console.log('no file attached')
+            return next();
+        }
+
+        // NOC
+        if (req.files.noc?.length) {
+            const results = await Promise.all(
+                req.files.noc.map(uploadFileforhostverification)
+            );
+            req.body.noc = results.map(file => file.url);
+        }
+
+        // ID Proof
+        if (req.files.idProof?.length) {
+            const results = await Promise.all(
+                req.files.idProof.map(uploadFileforhostverification)
+            );
+            req.body.idProof = results.map(file => file.url);
+        }
+
+        // Address Proof
+        if (req.files.addressProof?.length) {
+            const results = await Promise.all(
+                req.files.addressProof.map(uploadFileforhostverification)
+            );
+            req.body.addressProof = results.map(file => file.url);
+        }
+
+        // Property Photos (Multiple)
+        if (req.files.propertyPhotos?.length) {
+            const results = await Promise.all(
+                req.files.propertyPhotos.map(uploadFileHostGallery)
+            );
+            req.body.propertyPhotos = results.map(file => file.url);
+        }
+
+        // businessProof (Multiple)
+        if (req.files.businessProof?.length) {
+            const results = await Promise.all(
+                req.files.businessProof.map(uploadFileforhostverification)
+            );
+            req.body.businessProof = results.map(file => file.url);
+        }
+
+        next();
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+module.exports = uploadHostfiles;

@@ -1,4 +1,4 @@
-const { getHostsService, addHostService, getHostByIdService, getHostByUserIDService } = require("../services/hostService");
+const { getHostsService, addHostService, getHostByIdService, getHostByUserIDService, getHostForAdminsService, updateHostService } = require("../services/hostService");
 
 
 const getHosts = async (req, res) => {
@@ -11,7 +11,8 @@ const getHosts = async (req, res) => {
             address,
             nameOfBusiness,
             boardingOfPets,
-            amenities
+            amenities,
+            status
         } = req.query;
         const hosts = await getHostsService(
             page,
@@ -21,10 +22,43 @@ const getHosts = async (req, res) => {
             address,
             nameOfBusiness,
             boardingOfPets,
-            amenities);
+            amenities,
+            status);
+
         res.json(hosts);
     } catch (error) {
-        console.error('Error in get Hosts controller:', error.message);
+        console.error('Error in get Hosts controller:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getHostsforAdmin = async (req, res) => {
+    try {
+        const {
+            page,
+            limit,
+            name,
+            email,
+            address,
+            nameOfBusiness,
+            boardingOfPets,
+            amenities,
+            status
+        } = req.query;
+        const hosts = await getHostForAdminsService(
+            page,
+            limit,
+            name,
+            email,
+            address,
+            nameOfBusiness,
+            boardingOfPets,
+            amenities,
+            status);
+
+        res.json(hosts);
+    } catch (error) {
+        console.error('Error in get Hosts controller:', error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -45,10 +79,6 @@ const getHostById = async (req, res) => {
 
 const postHosts = async (req, res) => {
     try {
-        const hostdata = await getHostByUserIDService(req.body.userId)
-        if (hostdata) {
-            return res.json({ message: "user account already exist" })
-        }
         const hostId = await addHostService(req.body);
         res.status(201).json({
             message: 'Host created successfully',
@@ -65,4 +95,27 @@ const postHosts = async (req, res) => {
     }
 };
 
-module.exports = { getHosts, getHostById, postHosts };
+const putHosts = async (req, res) => {
+    try {
+        const { id } = req.params
+        const hostdata = await getHostByIdService(id)
+        if (!hostdata) {
+            return res.json({ message: "user account not exist" })
+        }
+        const hostId = await updateHostService(req, res);
+        res.status(201).json({
+            message: 'Host successfully updated',
+            success: true,
+            HostId: hostId
+        });
+    } catch (error) {
+        console.error('Error in put Host controller:', error.message);
+        res.status(500).json({
+            error: 'Internal Server Error',
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+module.exports = { getHosts, getHostById, postHosts, getHostsforAdmin, putHosts };

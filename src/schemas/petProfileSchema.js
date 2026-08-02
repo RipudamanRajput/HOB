@@ -1,5 +1,5 @@
 const { z, size } = require('zod');
-const { PetTypes, amenities } = require('../config/pets');
+const { PetTypes, amenities, petSize, petGender } = require('../config/pets');
 
 
 const createPetProfileSchema = z.object({
@@ -12,8 +12,8 @@ const createPetProfileSchema = z.object({
     petAge: z.number().int().min(0),
     colorAndMarkings: z.string().optional(),
     breed: z.string().optional(),
-    petGender: z.enum(["Male", "Female"]),
-    petSize: z.enum(["Small", "Medium", "Large"]),
+    petGender: z.enum(petGender),
+    petSize: z.enum(petSize),
     vacinationdate: z.string().datetime().optional(),
     tickTreatmentStatus: z.boolean().optional(),
     healthIssues: z.boolean().optional(),

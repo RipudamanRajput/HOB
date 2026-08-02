@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const { getSequelize } = require("../config/db")
 const { User: getUser } = require('./User');
-const { PetTypes, amenities, hostStatus } = require("../config/pets");
+const { PetTypes, amenities, hostStatus, bussinessType, property, propertyAreaType, Services } = require("../config/pets");
 
 let Host = null;
 
@@ -31,7 +31,19 @@ const initializeHost = () => {
             defaultValue: 'unverified',
             allowNull: false
         },
-        name: {
+        accountSuspendReason: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        topRated: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        mostPopullar: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        propertyName: {
             type: DataTypes.STRING,
             unique: false,
             allowNull: false
@@ -41,52 +53,20 @@ const initializeHost = () => {
             unique: false,
             allowNull: false
         },
-        about: {
-            type: DataTypes.TEXT,
-            allowNull: true
-        },
         bussinessType: {
-            type: DataTypes.ENUM('Homestyle', 'Professional'),
+            type: DataTypes.ENUM(...bussinessType),
             allowNull: false
         },
-        property: {
-            type: DataTypes.ENUM('Owned', 'Rented'),
+        propertyType: {
+            type: DataTypes.ENUM(...property),
             allowNull: false
         },
-        idProof: {
+        aboutBusiness: {
             type: DataTypes.TEXT,
-            validate: {
-                isUrl: true,
-            },
-        },
-        addressProof: {
-            type: DataTypes.TEXT,
-            validate: {
-                isUrl: true,
-            },
-        },
-        numberOfCareTakers: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        businessDetails: {
-            type: DataTypes.TEXT,
-            allowNull: true
-        },
-        nameOfBusiness: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        yearsOfExperience: {
-            type: DataTypes.INTEGER,
             allowNull: true
         },
         boardingOfPets: {
             type: DataTypes.ENUM(...PetTypes),
-            allowNull: false,
-        },
-        boardingType: {
-            type: DataTypes.ENUM('Homestyle', 'Professional'),
             allowNull: false,
         },
         capacity: {
@@ -146,26 +126,6 @@ const initializeHost = () => {
                 }
             }
         },
-        pricePerPet: {
-            type: DataTypes.JSON,
-            allowNull: false,
-            validate: {
-                isValidAmenities(value) {
-                    if (!Array.isArray(value)) {
-                        throw new Error("Amenities must be an array.");
-                    }
-                    value.forEach(item => {
-                        if (!PetTypes.includes(item.petType)) {
-                            throw new Error(`Invalid petType: ${item.petType}`);
-                        }
-
-                        if (typeof item.price !== "number") {
-                            throw new Error("price must be a number");
-                        }
-                    });
-                }
-            }
-        },
         sizeOfRooms: {
             type: DataTypes.JSON,
             allowNull: false,
@@ -201,24 +161,58 @@ const initializeHost = () => {
                 }
             }
         },
+        pricePerPet: {
+            type: DataTypes.JSON,
+            allowNull: false,
+            validate: {
+                isValidAmenities(value) {
+                    if (!Array.isArray(value)) {
+                        throw new Error("Amenities must be an array.");
+                    }
+                    value.forEach(item => {
+                        if (!PetTypes.includes(item.petType)) {
+                            throw new Error(`Invalid petType: ${item.petType}`);
+                        }
+
+                        if (typeof item.price !== "number") {
+                            throw new Error("price must be a number");
+                        }
+                    });
+                }
+            }
+        },
+        Services: {
+            type: DataTypes.ENUM(...Services),
+            allowNull: false,
+        },
+        nameOfBusiness: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         limitationsForGuests: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
-        limitationsDescription: {
-            type: DataTypes.TEXT,
-            allowNull: true
-        },
-        propertyAreaType: {
-            type: DataTypes.ENUM('Square Feet', 'Square Meters'),
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
             allowNull: false
         },
         propertyAreaSize: {
             type: DataTypes.FLOAT,
+            allowNull: true
+        },
+        numberOfCareTakers: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
             allowNull: false
         },
+        experienceWithPets: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        rule: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
         amenities: {
-            type: DataTypes.JSON,
+            type: DataTypes.ENUM(...amenities),
             allowNull: true,
         },
         paidAmenities: {
@@ -241,27 +235,135 @@ const initializeHost = () => {
                 }
             }
         },
-        fareAccordingToPetSize: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
+        propertyPhotos: {
+            type: DataTypes.JSON,
+            allowNull: true,
+            validate: {
+                isValidUrls(value) {
+                    if (value == null) return;
+
+                    if (!Array.isArray(value)) {
+                        throw new Error("propertyPhotos must be an array.");
+                    }
+
+                    value.forEach((url) => {
+                        if (typeof url !== "string") {
+                            throw new Error("Each property photo must be a string.");
+                        }
+
+                        const urlRegex =
+                            /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
+
+                        if (!urlRegex.test(url)) {
+                            throw new Error(`Invalid URL: ${url}`);
+                        }
+                    });
+                }
+            }
+        },
+        idProof: {
+            type: DataTypes.JSON,
+            allowNull: false,
+            validate: {
+                isValidUrls(value) {
+                    if (value == null) return;
+
+                    if (!Array.isArray(value)) {
+                        throw new Error("idProof must be an array.");
+                    }
+
+                    value.forEach((url) => {
+                        if (typeof url !== "string") {
+                            throw new Error("Each idProof photo must be a string.");
+                        }
+
+                        const urlRegex =
+                            /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
+
+                        if (!urlRegex.test(url)) {
+                            throw new Error(`Invalid URL: ${url}`);
+                        }
+                    });
+                }
+            }
+        },
+        addressProof: {
+            type: DataTypes.JSON,
+            allowNull: false,
+            validate: {
+                isValidUrls(value) {
+                    if (value == null) return;
+
+                    if (!Array.isArray(value)) {
+                        throw new Error("addressProof must be an array.");
+                    }
+
+                    value.forEach((url) => {
+                        if (typeof url !== "string") {
+                            throw new Error("Each addressProof photo must be a string.");
+                        }
+
+                        const urlRegex =
+                            /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
+
+                        if (!urlRegex.test(url)) {
+                            throw new Error(`Invalid URL: ${url}`);
+                        }
+                    });
+                }
+            }
         },
         noc: {
-            type: DataTypes.TEXT,
-            isUrl: true,
+            type: DataTypes.JSON,
+            allowNull: true,
             validate: {
-                isUrl: true,
+                isValidUrls(value) {
+                    if (value == null) return;
+
+                    if (!Array.isArray(value)) {
+                        throw new Error("noc must be an array.");
+                    }
+
+                    value.forEach((url) => {
+                        if (typeof url !== "string") {
+                            throw new Error("Each noc photo must be a string.");
+                        }
+
+                        const urlRegex =
+                            /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
+
+                        if (!urlRegex.test(url)) {
+                            throw new Error(`Invalid URL: ${url}`);
+                        }
+                    });
+                }
             }
         },
-        businessProf: {
-            type: DataTypes.TEXT,
-            isUrl: true,
+        businessProof: {
+            type: DataTypes.JSON,
+            allowNull: true,
             validate: {
-                isUrl: true,
+                isValidUrls(value) {
+                    if (value == null) return;
+
+                    if (!Array.isArray(value)) {
+                        throw new Error("businessProof must be an array.");
+                    }
+
+                    value.forEach((url) => {
+                        if (typeof url !== "string") {
+                            throw new Error("Each businessProof photo must be a string.");
+                        }
+
+                        const urlRegex =
+                            /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
+
+                        if (!urlRegex.test(url)) {
+                            throw new Error(`Invalid URL: ${url}`);
+                        }
+                    });
+                }
             }
-        },
-        rule: {
-            type: DataTypes.TEXT,
-            allowNull: true
         },
         createdAt: {
             type: DataTypes.DATE,

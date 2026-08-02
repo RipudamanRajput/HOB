@@ -3,7 +3,6 @@ const { URL } = require('url');
 require('dotenv').config();
 
 const uri = process.env.DATABASE_URL || process.env.DB_URI;
-
 if (!uri) {
     console.error('✗ DATABASE_URL or DB_URI environment variable is not set');
 }

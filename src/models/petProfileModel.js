@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const { getSequelize } = require("../config/db");
 const { User: getUser } = require('./User');
-const { PetTypes } = require("../config/pets");
+const { PetTypes, petGender, petSize } = require("../config/pets");
 
 
 let petProfileModel = null;
@@ -67,11 +67,11 @@ const initializePetProfileModel = () => {
             allowNull: true
         },
         petGender: {
-            type: DataTypes.ENUM('Male', 'Female'),
+            type: DataTypes.ENUM(...petGender),
             allowNull: false
         },
         petSize: {
-            type: DataTypes.ENUM('Small', 'Medium', 'Large'),
+            type: DataTypes.ENUM(...petSize),
             allowNull: false
         },
         vacinationdate: {

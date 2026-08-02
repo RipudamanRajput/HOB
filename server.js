@@ -4,6 +4,7 @@ const { initializePool, getSequelize } = require('./src/config/db');
 const { initializeUser } = require('./src/models/User');
 const { initializePassport } = require('./src/config/passport');
 const { tableInitializer } = require('./src/utils/tableInitializer');
+const { initiateSMTP } = require('./src/services/email/intiateSMTPConnetion');
 
 dotenv.config();
 
@@ -15,6 +16,10 @@ const startServer = async () => {
         console.log('Initializing database connection...');
         await initializePool();
         console.log('✓ Database connection established');
+
+        // SMTP server
+        // console.log('Initializing SMTP server');
+        // await initiateSMTP()
 
         // Initialize User model
         console.log('Initializing models...');

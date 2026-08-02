@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { sendHostApprovedEmail } = require('./../services/email/emailService')
 
 const expiresIn = '1h'; // Access token expires in 1 hour
 
@@ -14,10 +15,11 @@ const googleCallback = async (req, res) => {
     try {
         const user = req.user;
         const token = generateToken(user);
+        await sendHostApprovedEmail(user);
         res.json({
             token,
             expiresIn,
-            user:{
+            user: {
                 id: user.id,
                 email: user.email,
                 name: user.name,
@@ -28,7 +30,7 @@ const googleCallback = async (req, res) => {
         // Redirect to frontend with token
         // res.redirect(`http://localhost:3000/auth-success?token=${token}`);
     } catch (error) {
-        res.status(500).json({ error: 'Authentication failed' });
+        res.status(500).json({ message: 'Authentication failed', error });
     }
 };
 

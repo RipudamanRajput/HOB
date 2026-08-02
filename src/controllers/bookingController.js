@@ -42,10 +42,16 @@ const postBookingController = async (req, res) => {
             })
         }
         const host = await getHostByUserIDService(hostId)
-        if (!host) {
+         if (!host) {
             return res.status(400).json({
                 success: false,
                 message: "host not found"
+            })
+        }
+        if (host.status === "suspended") {
+            return res.status(400).json({
+                success: false,
+                message: "This host is suspended and cannot accept bookings."
             })
         }
         const BookingId = await addBookingService(req.body);

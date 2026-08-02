@@ -1,10 +1,21 @@
 let PetTypes = [
-    "Dog",
-    "Cat",
-    "Bird",
-    "Rabbit",
-    "Hamster"
+    "Dogs",
+    "Cats",
+    "Birds",
+    "smallPets"
 ];
+
+let petGender = [
+    'Male',
+    'Female'
+]
+
+let petSize = [
+    'Small',
+    'Medium',
+    'Large'
+]
+
 
 let behavioralIssues = [
     "No",
@@ -34,15 +45,52 @@ let bookingType = [
 ]
 
 let bookingStatus = [
-    'completed',
-    'confirmed',
     'initiated',
-    'pending'
+    'scheduled',
+    'running',
+    'completed',
+    'cancelled'
 ]
 
 let hostStatus = [
     'verified',
     'unverified',
-    'rejected'
+    'rejected',
+    'suspend'
 ]
-module.exports = { hostStatus, bookingStatus, PetTypes, behavioralIssues, amenities, bookingType };
+
+let bussinessType = [
+    'Homestay',
+    'Professional'
+]
+
+let property = [
+    'Owned',
+    'Rented'
+]
+
+let Services = [
+    'overnight_multiday_boarding',
+    'emergency_boarding',
+    'hourly_boarding',
+]
+
+let propertyAreaType = [
+    'Square Feet',
+    'Square Meters'
+]
+
+module.exports = {
+    hostStatus,
+    petGender,
+    bookingStatus,
+    PetTypes,
+    behavioralIssues,
+    amenities,
+    bookingType,
+    bussinessType,
+    property,
+    Services,
+    propertyAreaType,
+    petSize
+};
