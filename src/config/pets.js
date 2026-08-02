@@ -16,26 +16,28 @@ let petSize = [
     'Large'
 ]
 
-
-let behavioralIssues = [
-    "No",
-    "Yes",
-    "Aggression",
-    "Anxiety",
-    "Resource Gaurding",
-    "Food Agression",
-    "Fear",
-    "Other"
-];
-
 let amenities = [
-    'WiFi',
-    'Air Conditioning',
-    'Heating',
-    'Parking',
-    'Garden',
-    'Pool',
-    'Other'
+    'swimming',
+    'extra_walks',
+    'play_area',
+    '24/7_CCTV',
+    'veg_meal',
+    'wet_meal',
+    'dry_kibble_meal',
+    'grooming',
+    'pet_store',
+    'pet_cafe',
+    'vaternity_support',
+    'daily_cleaning',
+    'vaccination_pet_only',
+    'ticks_control',
+    'spa',
+    'jacuzzi',
+    'bubble_bath',
+    'ac',
+    'cooler',
+    'live_update',
+    'fresh_water'
 ]
 
 let bookingType = [
@@ -75,22 +77,15 @@ let Services = [
     'hourly_boarding',
 ]
 
-let propertyAreaType = [
-    'Square Feet',
-    'Square Meters'
-]
-
 module.exports = {
     hostStatus,
     petGender,
     bookingStatus,
     PetTypes,
-    behavioralIssues,
     amenities,
     bookingType,
     bussinessType,
     property,
     Services,
-    propertyAreaType,
     petSize
 };
