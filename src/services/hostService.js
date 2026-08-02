@@ -46,7 +46,7 @@ const updateHostService = async (req, res) => {
 const getHostsService = async (
     page = 1,
     limit = 10,
-    name = '',
+    propertyName = '',
     email = '',
     address = '',
     nameOfBusiness = '',
@@ -60,8 +60,8 @@ const getHostsService = async (
     const offset = (page - 1) * limit;
 
     const where = {};
-    if (name) {
-        where.name = { [Op.like]: `%${name}%` };
+    if (propertyName) {
+        where.propertyName = { [Op.like]: `%${propertyName}%` };
     }
     if (status) {
         where.status = status;
@@ -75,7 +75,26 @@ const getHostsService = async (
         where.nameOfBusiness = { [Op.like]: `%${nameOfBusiness}%` };
     }
     if (boardingOfPets) {
-        where.boardingOfPets = { [Op.like]: `%${boardingOfPets}%` };
+        if (typeof boardingOfPets === "string") {
+            try {
+                boardingOfPets = JSON.parse(boardingOfPets);
+            } catch {
+                boardingOfPets = boardingOfPets.split(",");
+            }
+        }
+
+        where[Op.and] = where[Op.and] || [];
+
+        const petConditions = boardingOfPets.map((pet) =>
+            Sequelize.literal(
+                `JSON_SEARCH(boardingOfPets, 'one', '${pet.trim()}') IS NOT NULL`
+            )
+        );
+
+        // Match ANY pet type
+        where[Op.and].push({
+            [Op.or]: petConditions
+        });
     }
 
     if (typeof amenities === "string") {
@@ -104,7 +123,7 @@ const getHostsService = async (
         limit,
         offset,
         attributes: [
-            "id", "name", "status", "address", "boardingType", "nameOfBusiness", "boardingOfPets"
+            "id", "propertyName", "status", "address", "boardingOfPets", "nameOfBusiness", "boardingOfPets"
         ]
     });
 
