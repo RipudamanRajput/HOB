@@ -2,8 +2,7 @@ const app = require('../src/app');
 const { initializePool, getSequelize } = require('../src/config/db');
 const { initializePassport } = require('../src/config/passport');
 const { initializeUser } = require('../src/models/User');
-const { initiateSMTP } = require('../src/services/email/intiateSMTPConnetion');
-const { transporter } = require('../src/services/email/transporter');
+const { initiateSMTP, transporter } = require('../src/services/email/intiateSMTPConnetion');
 const { tableInitializer } = require('../src/utils/tableInitializer');
 
 let initialized = false;
