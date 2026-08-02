@@ -22,8 +22,8 @@ hostRoutes.post('/add',
         { name: "businessProof", maxCount: 2 }
     ]),
     checkForHost,
-    uploadHostfiles,
     payloadValidation(createHostSchema),
+    uploadHostfiles,
     postHosts);
 hostRoutes.get('/get', getHosts);
 

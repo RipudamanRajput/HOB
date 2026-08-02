@@ -1,8 +1,8 @@
 let PetTypes = [
-    "Dogs",
-    "Cats",
-    "Birds",
-    "smallPets"
+    "Dog",
+    "Cat",
+    "Bird",
+    "smallPet"
 ];
 
 let petGender = [

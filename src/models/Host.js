@@ -66,8 +66,21 @@ const initializeHost = () => {
             allowNull: true
         },
         boardingOfPets: {
-            type: DataTypes.ENUM(...PetTypes),
+            type: DataTypes.JSON,
             allowNull: false,
+            validate: {
+                isValidBoardingOfPets(value) {
+                    if (!Array.isArray(value)) {
+                        throw new Error("boardingOfPets must be an array.");
+                    }
+
+                    value.forEach(item => {
+                        if (!PetTypes.includes(item)) {
+                            throw new Error(`Invalid pet type: ${item}`);
+                        }
+                    });
+                }
+            }
         },
         capacity: {
             type: DataTypes.JSON,
@@ -182,8 +195,21 @@ const initializeHost = () => {
             }
         },
         Services: {
-            type: DataTypes.ENUM(...Services),
+            type: DataTypes.JSON,
             allowNull: false,
+            validate: {
+                isValidServices(value) {
+                    if (!Array.isArray(value)) {
+                        throw new Error("Services must be an array.");
+                    }
+
+                    value.forEach(item => {
+                        if (!Services.includes(item)) {
+                            throw new Error(`Invalid service: ${item}`);
+                        }
+                    });
+                }
+            }
         },
         nameOfBusiness: {
             type: DataTypes.STRING,
@@ -212,8 +238,22 @@ const initializeHost = () => {
             allowNull: true
         },
         amenities: {
-            type: DataTypes.ENUM(...amenities),
+            type: DataTypes.JSON,
             allowNull: true,
+            validate: {
+                isValidAmenities(value) {
+                    if (value == null) return;
+                    if (!Array.isArray(value)) {
+                        throw new Error("amenities must be an array.");
+                    }
+
+                    value.forEach(item => {
+                        if (!amenities.includes(item)) {
+                            throw new Error(`Invalid amenity: ${item}`);
+                        }
+                    });
+                }
+            }
         },
         paidAmenities: {
             type: DataTypes.JSON,
