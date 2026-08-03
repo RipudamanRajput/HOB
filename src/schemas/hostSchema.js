@@ -21,7 +21,7 @@ const createHostSchema = z.object({
     boardingOfPets: z.array(z.enum(PetTypes)).min(1),
     capacity: z.array(z.any()).min(1),
     numberOfRooms: z.record(z.any()),
-    sizeOfRooms: z.record(z.any()),
+    sizeOfRooms: z.number().int().min(1),
     pricePerPet: z.array(z.any()).min(1),
     Services: z.array(z.enum(Services)).min(1),
     nameOfBusiness: z.string().optional(),

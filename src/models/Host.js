@@ -140,39 +140,8 @@ const initializeHost = () => {
             }
         },
         sizeOfRooms: {
-            type: DataTypes.JSON,
-            allowNull: false,
-            validate: {
-                isValidSizeOfRooms(value) {
-                    if (!value || typeof value !== "object" || Array.isArray(value)) {
-                        throw new Error("sizeOfRooms must be an object.");
-                    }
-
-                    const validateDimension = (dimension, name) => {
-                        if (!dimension || typeof dimension !== "object") {
-                            throw new Error(`${name} must be an object.`);
-                        }
-
-                        ["length", "breadth", "height"].forEach(key => {
-                            if (
-                                typeof dimension[key] !== "number" ||
-                                dimension[key] <= 0
-                            ) {
-                                throw new Error(`${name}.${key} must be a positive number.`);
-                            }
-                        });
-                    };
-
-                    for (const [petType, data] of Object.entries(value)) {
-                        if (!PetTypes.includes(petType)) {
-                            throw new Error(`Invalid pet type: ${petType}`);
-                        }
-
-                        validateDimension(data.room, `${petType}.room`);
-                        validateDimension(data.cage, `${petType}.cage`);
-                    }
-                }
-            }
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
         pricePerPet: {
             type: DataTypes.JSON,
