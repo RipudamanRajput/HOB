@@ -140,8 +140,24 @@ const initializeHost = () => {
             }
         },
         sizeOfRooms: {
-            type: DataTypes.INTEGER,
-            allowNull: false
+            type: DataTypes.JSON,
+            allowNull: false,
+            validate: {
+                isValidSizeOfRooms(value) {
+                      if (!Array.isArray(value)) {
+                        throw new Error("sizeOfRooms must be an array.");
+                    }
+                    value.forEach(item => {
+                        if (!PetTypes.includes(item.petType)) {
+                            throw new Error(`Invalid petType: ${item.petType}`);
+                        }
+
+                        if (typeof item.area !== "number") {
+                            throw new Error("area must be a number");
+                        }
+                    });
+                }
+            }
         },
         pricePerPet: {
             type: DataTypes.JSON,
