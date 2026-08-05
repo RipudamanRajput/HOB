@@ -144,7 +144,7 @@ const initializeHost = () => {
             allowNull: false,
             validate: {
                 isValidSizeOfRooms(value) {
-                      if (!Array.isArray(value)) {
+                    if (!Array.isArray(value)) {
                         throw new Error("sizeOfRooms must be an array.");
                     }
                     value.forEach(item => {
@@ -155,6 +155,34 @@ const initializeHost = () => {
                         if (typeof item.area !== "number") {
                             throw new Error("area must be a number");
                         }
+                    });
+                }
+            }
+        },
+        sizeOfCages: {
+            type: DataTypes.JSON,
+            allowNull: false,
+            validate: {
+                isValidSizeOfCages(value) {
+                    if (!Array.isArray(value)) {
+                        throw new Error("sizeOfCages must be an array.");
+                    }
+
+                    value.forEach(item => {
+                        if (!PetTypes.includes(item.petType)) {
+                            throw new Error(`Invalid petType: ${item.petType}`);
+                        }
+
+                        ["length", "breadth", "height"].forEach(dimension => {
+                            if (
+                                typeof item[dimension] !== "number" ||
+                                item[dimension] <= 0
+                            ) {
+                                throw new Error(
+                                    `${dimension} must be a positive number for petType: ${item.petType}`
+                                );
+                            }
+                        });
                     });
                 }
             }
@@ -174,6 +202,10 @@ const initializeHost = () => {
 
                         if (typeof item.price !== "number") {
                             throw new Error("price must be a number");
+                        }
+
+                        if (typeof item.info !== "string") {
+                            throw new Error("info must be a string");
                         }
                     });
                 }
