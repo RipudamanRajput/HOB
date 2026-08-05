@@ -191,21 +191,37 @@ const initializeHost = () => {
             type: DataTypes.JSON,
             allowNull: false,
             validate: {
-                isValidAmenities(value) {
+                isValidPricePerPet(value) {
                     if (!Array.isArray(value)) {
-                        throw new Error("Amenities must be an array.");
+                        throw new Error("pricePerPet must be an array.");
                     }
                     value.forEach(item => {
                         if (!PetTypes.includes(item.petType)) {
                             throw new Error(`Invalid petType: ${item.petType}`);
                         }
 
-                        if (typeof item.price !== "number") {
-                            throw new Error("price must be a number");
-                        }
-
-                        if (typeof item.info !== "string") {
-                            throw new Error("info must be a string");
+                        if (item.petType === "Dog") {
+                            ["small", "medium", "large"].forEach(size => {
+                                if (
+                                    !item[size] ||
+                                    typeof item[size] !== "object" ||
+                                    typeof item[size].price !== "number" ||
+                                    item[size].price < 0
+                                ) {
+                                    throw new Error(
+                                        `Dog must have ${size}.price as a positive number.`
+                                    );
+                                }
+                            });
+                        } else {
+                            if (
+                                typeof item.price !== "number" ||
+                                item.price < 0
+                            ) {
+                                throw new Error(
+                                    `${item.petType} must have a positive price.`
+                                );
+                            }
                         }
                     });
                 }
@@ -287,6 +303,10 @@ const initializeHost = () => {
 
                         if (typeof item.price !== "number") {
                             throw new Error("price must be a number");
+                        }
+
+                        if (typeof item.info !== "string") {
+                            throw new Error("info must be a string");
                         }
                     });
                 }
