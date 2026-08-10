@@ -43,6 +43,66 @@ const updateHostService = async (req, res) => {
     return updatedRows;
 };
 
+const updateHostPropertyService = async (req, res) => {
+    const Host = getHost();
+    const { id } = req.params
+    const {
+        boardingOfPets,
+        capacity,
+        numberOfRooms,
+        sizeOfRooms,
+        sizeOfCages,
+        pricePerPet,
+        Services,
+        amenities,
+        paidAmenities
+    } = req.body;
+
+    const updateData = {};
+
+    if (boardingOfPets !== undefined) {
+        updateData.boardingOfPets = boardingOfPets;
+    }
+
+    if (capacity !== undefined) {
+        updateData.capacity = capacity;
+    }
+
+    if (numberOfRooms !== undefined) {
+        updateData.numberOfRooms = numberOfRooms;
+    }
+
+    if (sizeOfRooms !== undefined) {
+        updateData.sizeOfRooms = sizeOfRooms;
+    }
+
+    if (sizeOfCages !== undefined) {
+        updateData.sizeOfCages = sizeOfCages;
+    }
+
+    if (pricePerPet !== undefined) {
+        updateData.pricePerPet = pricePerPet;
+    }
+
+    if (amenities !== undefined) {
+        updateData.amenities = amenities;
+    }
+
+    if (paidAmenities !== undefined) {
+        updateData.paidAmenities = paidAmenities;
+    }
+
+    if (Services !== undefined) {
+        updateData.Services = Services;
+    }
+
+    const [updatedRows] = await Host.update(updateData, {
+        where: { id }
+    });
+
+    return updatedRows;
+};
+
 const getHostsService = async (
     page = 1,
     limit = 10,
@@ -225,4 +285,4 @@ const getHostByUserIDService = async (userId) => {
     return host;
 };
 
-module.exports = { addHostService, getHostsService, getHostByIdService, getHostByUserIDService, getHostForAdminsService, updateHostService };
+module.exports = { addHostService, getHostsService, getHostByIdService, getHostByUserIDService, getHostForAdminsService, updateHostService, updateHostPropertyService };

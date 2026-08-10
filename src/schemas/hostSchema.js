@@ -3,11 +3,23 @@ const { PetTypes, amenities, bussinessType, property, propertyAreaType, hostStat
 
 const AmenitiesEnum = z.enum(amenities);
 
-const updateHostSchema = z.object({
+const adminUpdateHostSchema = z.object({
     status: z.enum(hostStatus),
     accountSuspendReason: z.string().optional(),
     topRated: z.boolean().optional(),
     mostPopullar: z.boolean().optional()
+});
+
+const updateHostSchema = z.object({
+    boardingOfPets: z.array(z.enum(PetTypes)).min(1),
+    capacity: z.array(z.any()).min(1),
+    numberOfRooms: z.record(z.any()),
+    sizeOfRooms: z.array(z.any()).min(1),
+    sizeOfCages: z.array(z.any()).min(1),
+    pricePerPet: z.array(z.any()).min(1),
+    Services: z.array(z.enum(Services)).min(1),
+    amenities: z.array(AmenitiesEnum).optional(),
+    paidAmenities: z.array(z.any()).min(1),
 });
 
 const createHostSchema = z.object({
@@ -35,4 +47,4 @@ const createHostSchema = z.object({
     paidAmenities: z.array(z.any()).min(1),
 });
 
-module.exports = { createHostSchema, updateHostSchema };
+module.exports = { createHostSchema, adminUpdateHostSchema, updateHostSchema };

@@ -76,7 +76,7 @@ const initializeHost = () => {
 
                     value.forEach(item => {
                         if (!PetTypes.includes(item)) {
-                            throw new Error(`Invalid pet type: ${item}`);
+                            throw new Error(`Invalid pet type: ${item} in boardingOfPets`);
                         }
                     });
                 }
@@ -92,7 +92,7 @@ const initializeHost = () => {
                     }
                     value.forEach(item => {
                         if (!PetTypes.includes(item.petType)) {
-                            throw new Error(`Invalid petType: ${item.petType}`);
+                            throw new Error(`Invalid petType: ${item.petType} in capacity`);
                         }
 
                         if (typeof item.capacity !== "number") {
@@ -113,11 +113,11 @@ const initializeHost = () => {
 
                     for (const [petType, data] of Object.entries(value)) {
                         if (!PetTypes.includes(petType)) {
-                            throw new Error(`Invalid pet type: ${petType}`);
+                            throw new Error(`Invalid pet type: ${petType} in numberOfRooms.`);
                         }
 
                         if (!data || typeof data !== "object") {
-                            throw new Error(`Value for ${petType} must be an object.`);
+                            throw new Error(`Value for ${petType} must be an object in numberOfRooms.`);
                         }
 
                         if (
@@ -125,7 +125,7 @@ const initializeHost = () => {
                             !Number.isInteger(data.room) ||
                             data.room < 0
                         ) {
-                            throw new Error(`${petType}.room must be a non-negative integer.`);
+                            throw new Error(`${petType}.room must be a non-negative integer in numberOfRooms.`);
                         }
 
                         if (
@@ -133,7 +133,7 @@ const initializeHost = () => {
                             !Number.isInteger(data.cage) ||
                             data.cage < 0
                         ) {
-                            throw new Error(`${petType}.cage must be a non-negative integer.`);
+                            throw new Error(`${petType}.cage must be a non-negative integer in numberOfRooms.`);
                         }
                     }
                 }
@@ -149,11 +149,11 @@ const initializeHost = () => {
                     }
                     value.forEach(item => {
                         if (!PetTypes.includes(item.petType)) {
-                            throw new Error(`Invalid petType: ${item.petType}`);
+                            throw new Error(`Invalid petType: ${item.petType} in sizeOfRooms.`);
                         }
 
                         if (typeof item.area !== "number") {
-                            throw new Error("area must be a number");
+                            throw new Error("area must be a number in sizeOfRooms.");
                         }
                     });
                 }
@@ -170,7 +170,7 @@ const initializeHost = () => {
 
                     value.forEach(item => {
                         if (!PetTypes.includes(item.petType)) {
-                            throw new Error(`Invalid petType: ${item.petType}`);
+                            throw new Error(`Invalid petType: ${item.petType} in sizeOfCages.`);
                         }
 
                         ["length", "breadth", "height"].forEach(dimension => {
@@ -179,7 +179,7 @@ const initializeHost = () => {
                                 item[dimension] <= 0
                             ) {
                                 throw new Error(
-                                    `${dimension} must be a positive number for petType: ${item.petType}`
+                                    `${dimension} must be a positive number for petType: ${item.petType} in sizeOfCages.`
                                 );
                             }
                         });
@@ -197,7 +197,7 @@ const initializeHost = () => {
                     }
                     value.forEach(item => {
                         if (!PetTypes.includes(item.petType)) {
-                            throw new Error(`Invalid petType: ${item.petType}`);
+                            throw new Error(`Invalid petType: ${item.petType} in pricePerPet.`);
                         }
 
                         if (item.petType === "Dog") {
@@ -209,7 +209,7 @@ const initializeHost = () => {
                                     item[size].price < 0
                                 ) {
                                     throw new Error(
-                                        `Dog must have ${size}.price as a positive number.`
+                                        `Dog must have ${size}.price as a positive number in pricePerPet.`
                                     );
                                 }
                             });
@@ -219,7 +219,7 @@ const initializeHost = () => {
                                 item.price < 0
                             ) {
                                 throw new Error(
-                                    `${item.petType} must have a positive price.`
+                                    `${item.petType} must have a positive price in pricePerPet.`
                                 );
                             }
                         }
@@ -238,7 +238,7 @@ const initializeHost = () => {
 
                     value.forEach(item => {
                         if (!Services.includes(item)) {
-                            throw new Error(`Invalid service: ${item}`);
+                            throw new Error(`Invalid service: ${item} in Services.`);
                         }
                     });
                 }
@@ -282,7 +282,7 @@ const initializeHost = () => {
 
                     value.forEach(item => {
                         if (!amenities.includes(item)) {
-                            throw new Error(`Invalid amenity: ${item}`);
+                            throw new Error(`Invalid amenity: ${item} in amenities.`);
                         }
                     });
                 }
@@ -298,15 +298,15 @@ const initializeHost = () => {
                     }
                     value.forEach(item => {
                         if (!amenities.includes(item.amenitie)) {
-                            throw new Error(`Invalid amenity: ${item.amenitie}`);
+                            throw new Error(`Invalid amenity: ${item.amenitie} in paidAmenities.`);
                         }
 
                         if (typeof item.price !== "number") {
-                            throw new Error("price must be a number");
+                            throw new Error("price must be a number in paidAmenities.");
                         }
 
                         if (typeof item.info !== "string") {
-                            throw new Error("info must be a string");
+                            throw new Error("info must be a string in paidAmenities.");
                         }
                     });
                 }
@@ -332,7 +332,7 @@ const initializeHost = () => {
                             /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
 
                         if (!urlRegex.test(url)) {
-                            throw new Error(`Invalid URL: ${url}`);
+                            throw new Error(`Invalid URL: ${url} in propertyPhotos.`);
                         }
                     });
                 }
@@ -358,7 +358,7 @@ const initializeHost = () => {
                             /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
 
                         if (!urlRegex.test(url)) {
-                            throw new Error(`Invalid URL: ${url}`);
+                            throw new Error(`Invalid URL: ${url} in idProof.`);
                         }
                     });
                 }
@@ -384,7 +384,7 @@ const initializeHost = () => {
                             /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
 
                         if (!urlRegex.test(url)) {
-                            throw new Error(`Invalid URL: ${url}`);
+                            throw new Error(`Invalid URL: ${url} in addressProof.`);
                         }
                     });
                 }
@@ -410,7 +410,7 @@ const initializeHost = () => {
                             /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
 
                         if (!urlRegex.test(url)) {
-                            throw new Error(`Invalid URL: ${url}`);
+                            throw new Error(`Invalid URL: ${url} in noc.`);
                         }
                     });
                 }
@@ -436,7 +436,7 @@ const initializeHost = () => {
                             /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
 
                         if (!urlRegex.test(url)) {
-                            throw new Error(`Invalid URL: ${url}`);
+                            throw new Error(`Invalid URL: ${url} in businessProof.`);
                         }
                     });
                 }

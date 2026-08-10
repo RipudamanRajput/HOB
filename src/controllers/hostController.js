@@ -1,4 +1,4 @@
-const { getHostsService, addHostService, getHostByIdService, getHostByUserIDService, getHostForAdminsService, updateHostService } = require("../services/hostService");
+const { getHostsService, addHostService, getHostByIdService, getHostByUserIDService, getHostForAdminsService, updateHostService, updateHostPropertyService } = require("../services/hostService");
 
 
 const getHosts = async (req, res) => {
@@ -117,5 +117,27 @@ const putHosts = async (req, res) => {
         });
     }
 };
+const putHostProperty = async (req, res) => {
+    try {
+        const { id } = req.params
+        const hostdata = await getHostByIdService(id)
+        if (!hostdata) {
+            return res.json({ message: "Host account not exist" })
+        }
+        const hostId = await updateHostPropertyService(req, res);
+        res.status(201).json({
+            message: 'Host property successfully updated',
+            success: true,
+            HostId: hostId
+        });
+    } catch (error) {
+        console.error('Error in put Host controller:', error.message);
+        res.status(500).json({
+            error: 'Internal Server Error',
+            success: false,
+            message: error.message
+        });
+    }
+};
 
-module.exports = { getHosts, getHostById, postHosts, getHostsforAdmin, putHosts };
+module.exports = { getHosts, getHostById, postHosts, getHostsforAdmin, putHosts, putHostProperty };
