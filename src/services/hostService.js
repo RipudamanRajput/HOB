@@ -183,7 +183,18 @@ const getHostsService = async (
         limit,
         offset,
         attributes: [
-            "id", "propertyName", "status", "address", "boardingOfPets", "nameOfBusiness", "boardingOfPets"
+            "id",
+            "propertyName",
+            "status",
+            "bussinessType",
+            "address",
+            "boardingOfPets",
+            "nameOfBusiness",
+            "boardingOfPets",
+            "proprtyPhotos",
+            "services",
+            "pricePerPet",
+
         ]
     });
 
