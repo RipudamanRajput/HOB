@@ -191,7 +191,7 @@ const getHostsService = async (
             "boardingOfPets",
             "nameOfBusiness",
             "boardingOfPets",
-            "proprtyPhotos",
+            "propertyPhotos",
             "services",
             "pricePerPet",
 
