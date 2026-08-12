@@ -112,7 +112,10 @@ const getHostsService = async (
     nameOfBusiness = '',
     boardingOfPets = '',
     amenities = [],
-    status = ''
+    status = '',
+    bussinessType = '',
+    minPrice = '',
+    maxPrice = ''
 ) => {
     const Host = getHost();
     page = parseInt(page) || 1;
@@ -130,6 +133,58 @@ const getHostsService = async (
     }
     if (address) {
         where.address = { [Op.like]: `%${address}%` };
+    }
+    if (bussinessType) {
+        if (typeof bussinessType === "string") {
+            try {
+                bussinessType = JSON.parse(bussinessType);
+            } catch {
+                bussinessType = bussinessType.split(",");
+            }
+        }
+
+        if (Array.isArray(bussinessType) && bussinessType.length) {
+            where.bussinessType = {
+                [Op.in]: bussinessType
+            };
+        }
+    }
+
+    if (minPrice !== '' || maxPrice !== '') {
+        const min = Number(minPrice);
+        const max = Number(maxPrice);
+
+        if (Number.isNaN(min) || Number.isNaN(max)) {
+            throw new Error('minPrice and maxPrice must be valid numbers');
+        }
+
+        where[Op.and] = where[Op.and] || [];
+
+        where[Op.and].push(
+            Sequelize.literal(`
+            EXISTS (
+                SELECT 1
+                FROM JSON_TABLE(
+                    pricePerPet,
+                    '$[*]' COLUMNS (
+                        petType VARCHAR(50) PATH '$.petType',
+                        dogPrice DECIMAL(10,2) PATH '$.small.price',
+                        otherPrice DECIMAL(10,2) PATH '$.price'
+                    )
+                ) AS price_data
+                WHERE
+                    (
+                        price_data.petType = 'Dog'
+                        AND price_data.dogPrice BETWEEN ${min} AND ${max}
+                    )
+                    OR
+                    (
+                        price_data.petType <> 'Dog'
+                        AND price_data.otherPrice BETWEEN ${min} AND ${max}
+                    )
+            )
+        `)
+        );
     }
     if (nameOfBusiness) {
         where.nameOfBusiness = { [Op.like]: `%${nameOfBusiness}%` };

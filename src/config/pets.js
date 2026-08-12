@@ -73,8 +73,7 @@ let property = [
 
 let Services = [
     'overnight_multiday_boarding',
-    'emergency_boarding',
-    'hourly_boarding',
+    'emergency_boarding'
 ]
 
 module.exports = {

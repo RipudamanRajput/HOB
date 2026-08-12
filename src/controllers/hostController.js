@@ -12,7 +12,10 @@ const getHosts = async (req, res) => {
             nameOfBusiness,
             boardingOfPets,
             amenities,
-            status
+            status,
+            bussinessType,
+            minPrice,
+            maxPrice
         } = req.query;
         const hosts = await getHostsService(
             page,
@@ -23,7 +26,12 @@ const getHosts = async (req, res) => {
             nameOfBusiness,
             boardingOfPets,
             amenities,
-            status);
+            status,
+            bussinessType,
+            minPrice,
+            maxPrice
+        );
+
 
         res.json(hosts);
     } catch (error) {
