@@ -11,7 +11,7 @@ const { checkForHost } = require('../middleware/checkForHost');
 
 const hostRoutes = express.Router();
 
-hostRoutes.get('/get/:id', authMiddleware, IDValidation(userIDParamSchema), getHostById);
+hostRoutes.get('/get/:id', IDValidation(userIDParamSchema), getHostById);
 hostRoutes.post('/add',
     authMiddleware,
     upload.fields([
