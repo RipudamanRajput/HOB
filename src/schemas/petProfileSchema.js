@@ -9,7 +9,7 @@ const createPetProfileSchema = z.object({
     addressPet: z.string().min(5).max(255),
     petType: z.enum(PetTypes),
     petName: z.string().min(1).max(100),
-    petAge: z.number().float().min(0.1),
+    petAge: z.float32().min(0),
     colorAndMarkings: z.string().optional(),
     breed: z.string().optional(),
     petGender: z.enum(petGender),
