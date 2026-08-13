@@ -54,7 +54,7 @@ const initializePetProfileModel = () => {
             allowNull: false
         },
         petAge: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.FLOAT,
             allowNull: false
         },
         colorAndMarkings: {

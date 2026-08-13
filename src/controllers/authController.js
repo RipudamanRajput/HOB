@@ -16,19 +16,26 @@ const googleCallback = async (req, res) => {
         const user = req.user;
         const token = generateToken(user);
         await sendHostApprovedEmail(user);
-        res.json({
-            token,
-            expiresIn,
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                googleId: user.googleId,
-                avatar: user.avatar
-            }
-        });
+        const origin = req.get('origin') || '';
+        // res.json({
+        //     token,
+        //     expiresIn,
+        //     user: {
+        //         id: user.id,
+        //         email: user.email,
+        //         name: user.name,
+        //         googleId: user.googleId,
+        //         avatar: user.avatar
+        //     }
+        // });
         // Redirect to frontend with token
-        // res.redirect(`http://localhost:3000/auth-success?token=${token}`);
+        const redirectUrl =
+            process.env.NODE_ENV === 'local'
+                ? 'http://localhost:5173'
+                : process.env.GOOGLE_REDIRECT_URL;
+        res.redirect(
+            `${redirectUrl}/?token=${encodeURIComponent(token)}&id=${encodeURIComponent(user.id)}`
+        );
     } catch (error) {
         res.status(500).json({ message: 'Authentication failed', error });
     }
