@@ -1,13 +1,13 @@
 const jwt = require('jsonwebtoken');
 const { sendHostApprovedEmail } = require('./../services/email/emailService')
 
-const expiresIn = '24h'; // Access token expires in 1 hour
+const expiresIn = '24h'; // Access token expires in 24 hour
 
 const generateToken = (user) => {
     return jwt.sign(
         { id: user.id, email: user.email, googleId: user.googleId },
         process.env.JWT_SECRET,
-        { expiresIn } // Access token expires in 1 hour
+        { expiresIn } // Access token expires in 24 hour
     );
 };
 

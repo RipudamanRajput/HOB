@@ -38,7 +38,6 @@ const initializePetProfileModel = () => {
         },
         email: {
             type: DataTypes.STRING,
-            unique: true,
             allowNull: false
         },
         addressPet: {
