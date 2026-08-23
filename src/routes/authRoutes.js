@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const { googleCallback, logout } = require('../controllers/authController');
+const { googleCallback, logout, loginController } = require('../controllers/authController');
 
 const authRoutes = express.Router();
 
@@ -23,6 +23,8 @@ authRoutes.get(
   passport.authenticate('google', { failureRedirect: '/api/auth/login-failed' }),
   googleCallback
 );
+
+authRoutes.post('/login', loginController)
 
 
 module.exports = authRoutes;

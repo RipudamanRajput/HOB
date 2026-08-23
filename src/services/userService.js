@@ -61,7 +61,8 @@ const getUserByEmailService = async (email) => {
             'email',
             'googleId',
             'avatar',
-            'role'
+            'role',
+            'password'
         ]
     });
 };

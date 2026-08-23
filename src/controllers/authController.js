@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { sendHostApprovedEmail } = require('./../services/email/emailService');
-const { getUserById } = require('./../services/userService');
+const { getUserById, getUserByEmailService } = require('./../services/userService');
 
 const expiresIn = '24h'; // Access token expires in 24 hour
 
@@ -43,6 +43,41 @@ const generateToken = (user) => {
 // };
 
 
+const loginController = async (req, res) => {
+    try {
+        const user = req.body;
+        const userdetails = await getUserByEmailService(user.email);
+        if (!userdetails) {
+            return res.status(404).json({
+                message: 'Authentication failed',
+                error: error.message
+            });
+        }
+        if (user.password != userdetails.password) {
+            return res.status(400).json({
+                message: 'Authentication failed',
+                error: 'Invalid password'
+            });
+        }
+
+        const token = generateToken(userdetails);
+
+        return res.status(201).json({
+            message: 'loged in successfully',
+            success: true,
+            userId: userdetails.id,
+            token: token,
+            role: userdetails.role
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Authentication failed',
+            error: error.message
+        });
+    }
+};
+
+
 const googleCallback = async (req, res) => {
     try {
         const user = req.user;
@@ -71,4 +106,4 @@ const googleCallback = async (req, res) => {
     }
 };
 
-module.exports = { generateToken, googleCallback, expiresIn };
+module.exports = { generateToken, googleCallback, expiresIn, loginController };
