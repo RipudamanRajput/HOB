@@ -89,7 +89,7 @@ const getHostById = async (req, res) => {
 const postHosts = async (req, res) => {
     try {
         const hostId = await addHostService(req.body);
-        await updateUserRoleService(req.body.userId, "host");
+        await updateUserRoleService("host", req.body.userId);
         res.status(201).json({
             message: 'Host created successfully',
             success: true,
