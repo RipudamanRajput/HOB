@@ -29,6 +29,11 @@ const initializeUser = () => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    role: {
+      type: DataTypes.ENUM('customer', 'host', 'admin'),
+      allowNull: false,
+      defaultValue: 'customer'
+    },
     avatar: {
       type: DataTypes.STRING
     },

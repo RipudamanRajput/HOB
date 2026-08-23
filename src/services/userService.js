@@ -40,7 +40,7 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '') => {
 const getUserById = async (userId) => {
     const User = getUser();
     const user = await User.findByPk(userId, {
-        attributes: ['id', 'name', 'email', 'googleId', 'avatar']
+        attributes: ['id', 'name', 'email', 'googleId', 'avatar', 'role']
     });
     return user;
 }
