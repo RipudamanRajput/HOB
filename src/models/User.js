@@ -14,7 +14,8 @@ const initializeUser = () => {
     },
     googleId: {
       type: DataTypes.STRING,
-      unique: true
+      unique: true,
+      required: false
     },
     email: {
       type: DataTypes.STRING,
@@ -35,7 +36,8 @@ const initializeUser = () => {
       defaultValue: 'customer'
     },
     avatar: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      required: false
     },
     createdAt: {
       type: DataTypes.DATE,

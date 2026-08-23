@@ -2,9 +2,14 @@ const { User: getUser } = require('../models/User');
 const { Op } = require('sequelize');
 
 const addUser = async (userData) => {
-    const User = getUser();
-    const user = await User.create(userData);
-    return user.id;
+    try {
+        const User = getUser();
+        const user = await User.create(userData);
+        return user.id;
+    } catch (error) {
+        console.error('Error adding user:', error.message);
+        throw new Error('Error adding user');
+    }
 }
 
 const getUsers = async (page = 1, limit = 10, name = '', email = '') => {
@@ -45,4 +50,19 @@ const getUserById = async (userId) => {
     return user;
 }
 
-module.exports = { addUser, getUsers, getUserById };
+const getUserByEmailService = async (email) => {
+    const User = getUser();
+
+    return await User.findOne({
+        where: { email },
+        attributes: [
+            'id',
+            'name',
+            'email',
+            'googleId',
+            'avatar',
+            'role'
+        ]
+    });
+};
+module.exports = { addUser, getUsers, getUserById, getUserByEmailService };

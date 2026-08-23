@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const { sendHostApprovedEmail } = require('./../services/email/emailService')
+const { sendHostApprovedEmail } = require('./../services/email/emailService');
+const { getUserById } = require('./../services/userService');
 
 const expiresIn = '24h'; // Access token expires in 24 hour
 
@@ -45,16 +46,21 @@ const generateToken = (user) => {
 const googleCallback = async (req, res) => {
     try {
         const user = req.user;
+        const userdetails = await getUserById(user.dataValues.id);
+        console.log('User details:', userdetails);
         const token = generateToken(user);
 
         await sendHostApprovedEmail(user);
+        if (!req.query.state) {
+            res.status(400).json({ message: 'Missing state parameter in the request' });
+        }
         console.log('Host approved email sent to:', req.query.state);
         const redirectUrl = req.query.state
             ? decodeURIComponent(req.query.state)
             : process.env.GOOGLE_REDIRECT_URL;
 
         res.redirect(
-            `${redirectUrl}/?token=${encodeURIComponent(token)}&id=${encodeURIComponent(user.id)}`
+            `${redirectUrl}/?token=${encodeURIComponent(token)}&id=${encodeURIComponent(user.id)}&role=${encodeURIComponent(userdetails.role)}`
         );
 
     } catch (error) {
@@ -65,4 +71,4 @@ const googleCallback = async (req, res) => {
     }
 };
 
-module.exports = { generateToken, googleCallback };
+module.exports = { generateToken, googleCallback, expiresIn };

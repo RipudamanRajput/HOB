@@ -1,5 +1,14 @@
-const { addUser, getUsers: getUsersService, getUserById: getUserByIdService, updateUser: updateUserService } = require("../services/userService");
+const { addUser, getUsers: getUsersService, getUserById: getUserByIdService, updateUser: updateUserService, getUserByEmailService } = require("../services/userService");
+const { expiresIn } = require("./authController");
+const jwt = require('jsonwebtoken');
 
+const generateToken = (user) => {
+    return jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn } // Access token expires in 24 hour
+    );
+};
 const getUsers = async (req, res) => {
     try {
         const { page, limit, name, email } = req.query;
@@ -27,11 +36,22 @@ const getUserById = async (req, res) => {
 
 const postUsers = async (req, res) => {
     try {
+        const useremail = await getUserByEmailService(req.body.email);
+        if (useremail) {
+            return res.status(400).json({
+                error: 'User already exists'
+            });
+        }
         const userId = await addUser(req.body);
+        const userdetails = await getUserByIdService(userId);
+        const token = generateToken(userdetails);
+
         res.status(201).json({
             message: 'User created successfully',
             success: true,
-            userId: userId
+            userId: userId,
+            token: token,
+            role: userdetails.role
         });
     } catch (error) {
         console.error('Error in postUsers:', error.message);
