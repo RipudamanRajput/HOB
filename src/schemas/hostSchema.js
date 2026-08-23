@@ -44,7 +44,7 @@ const createHostSchema = z.object({
     experienceWithPets: z.string().min(5).max(200),
     rule: z.string().optional(),
     amenities: z.array(AmenitiesEnum).optional(),
-    paidAmenities: z.array(z.any()).min(1),
+    paidAmenities: z.array(z.any()).min(0),
 });
 
 module.exports = { createHostSchema, adminUpdateHostSchema, updateHostSchema };
