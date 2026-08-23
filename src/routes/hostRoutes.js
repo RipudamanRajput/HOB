@@ -6,7 +6,7 @@ const { getHostById, getHosts, postHosts, getHostsforAdmin, putHosts, putHostPro
 const { payloadValidation } = require('../middleware/payloadValidation');
 const { createHostSchema, adminUpdateHostSchema, updateHostSchema } = require('../schemas/hostSchema');
 const { upload } = require('../middleware/upload');
-const uploadHostfiles = require('../middleware/uploadFiles');
+const { uploadHostfiles, handleHostUpload } = require('../middleware/uploadFiles');
 const { checkForHost } = require('../middleware/checkForHost');
 
 const hostRoutes = express.Router();
@@ -14,13 +14,7 @@ const hostRoutes = express.Router();
 hostRoutes.get('/get/:id', IDValidation(userIDParamSchema), getHostById);
 hostRoutes.post('/add',
     authMiddleware,
-    upload.fields([
-        { name: "noc", maxCount: 2 },
-        { name: "propertyPhotos", maxCount: 6 },
-        { name: "idProof", maxCount: 2 },
-        { name: "addressProof", maxCount: 2 },
-        { name: "businessProof", maxCount: 2 }
-    ]),
+    handleHostUpload,
     checkForHost,
     payloadValidation(createHostSchema),
     uploadHostfiles,

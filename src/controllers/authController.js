@@ -82,7 +82,6 @@ const googleCallback = async (req, res) => {
     try {
         const user = req.user;
         const userdetails = await getUserById(user.dataValues.id);
-        console.log('User details:', userdetails);
         const token = generateToken(user);
 
         await sendHostApprovedEmail(user);

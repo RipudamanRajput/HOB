@@ -1,5 +1,7 @@
 const cloudinary = require("../config/cloudinary");
 const streamifier = require("streamifier");
+const { upload } = require("./upload");
+const multer = require("multer");
 
 const uploadFileHostGallery = (file) => {
     return new Promise((resolve, reject) => {
@@ -103,4 +105,50 @@ const uploadHostfiles = async (req, res, next) => {
     }
 };
 
-module.exports = uploadHostfiles;
+const handleHostUpload = (req, res, next) => {
+    const uploadHostFiles = upload.fields([
+        { name: 'noc', maxCount: 2 },
+        { name: 'propertyPhotos', maxCount: 6 },
+        { name: 'idProof', maxCount: 2 },
+        { name: 'addressProof', maxCount: 2 },
+        { name: 'businessProof', maxCount: 3 }
+    ]);
+
+    const fileLimits = {
+        noc: 2,
+        propertyPhotos: 6,
+        idProof: 2,
+        addressProof: 2,
+        businessProof: 3
+    };
+    uploadHostFiles(req, res, (err) => {
+        if (err) {
+            console.error('Upload error:', err);
+
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+                    const field = err.field;
+
+                    return res.status(400).json({
+                        success: false,
+                        message: `${field} can contain maximum ${fileLimits[field]} files`
+                    });
+                }
+
+                return res.status(400).json({
+                    success: false,
+                    message: err.message
+                });
+            }
+
+            return res.status(500).json({
+                success: false,
+                message: err.message || 'File upload failed'
+            });
+        }
+
+        next();
+    });
+};
+
+module.exports = { uploadHostfiles, handleHostUpload };
