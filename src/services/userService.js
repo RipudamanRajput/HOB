@@ -77,7 +77,8 @@ const updateUserRoleService = async (role, userId) => {
         await User.update({ role }, { where: { id: userId } });
         await user.save();
     } catch (error) {
-        console.error('Error updating user role:', error.message);
+        CONSOLE.log('USER DETAILS:', user);
+        console.error('Error updating user role:', error);
         throw new Error('Error updating user role');
     }
 }
