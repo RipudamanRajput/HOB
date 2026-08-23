@@ -1,4 +1,5 @@
 const { getHostsService, addHostService, getHostByIdService, getHostByUserIDService, getHostForAdminsService, updateHostService, updateHostPropertyService } = require("../services/hostService");
+const { updateUserRoleService } = require("../services/userService");
 
 
 const getHosts = async (req, res) => {
@@ -88,13 +89,14 @@ const getHostById = async (req, res) => {
 const postHosts = async (req, res) => {
     try {
         const hostId = await addHostService(req.body);
+        await updateUserRoleService(req.body.userId, "host");
         res.status(201).json({
             message: 'Host created successfully',
             success: true,
             HostId: hostId
         });
     } catch (error) {
-        console.error('Error in pos tHosts controller:', error.message);
+        console.error('Error in post Hosts controller:', error.message);
         res.status(500).json({
             error: 'Internal Server Error',
             success: false,

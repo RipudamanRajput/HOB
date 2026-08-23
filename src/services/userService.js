@@ -65,4 +65,21 @@ const getUserByEmailService = async (email) => {
         ]
     });
 };
-module.exports = { addUser, getUsers, getUserById, getUserByEmailService };
+
+const updateUserRoleService = async (role, userId) => {
+    try {
+        const User = getUser();
+
+        const user = await User.findOne({ where: { id: userId } });
+        if (!user) {
+            throw new Error('User not found');
+        }
+        await User.update({ role }, { where: { id: userId } });
+        await user.save();
+    } catch (error) {
+        console.error('Error updating user role:', error.message);
+        throw new Error('Error updating user role');
+    }
+}
+
+module.exports = { addUser, getUsers, getUserById, getUserByEmailService, updateUserRoleService };
