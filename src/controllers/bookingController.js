@@ -1,4 +1,4 @@
-const { getBookingService, getBookingByIdService, addBookingService } = require("../services/bookingService");
+const { getBookingService, getBookingByIdService, addBookingService, updateBookingStatusByTimeService } = require("../services/bookingService");
 const { getHostByUserIDService } = require("../services/hostService");
 const { getPetProfileByIdService } = require("../services/petProfileService");
 
@@ -42,7 +42,7 @@ const postBookingController = async (req, res) => {
             })
         }
         const host = await getHostByUserIDService(hostId)
-         if (!host) {
+        if (!host) {
             return res.status(400).json({
                 success: false,
                 message: "host not found"
@@ -70,4 +70,18 @@ const postBookingController = async (req, res) => {
     }
 };
 
-module.exports = { getBookingController, getBookingByIdController, postBookingController }
+const updateBookingStatusController = async (req, res) => {
+    try {
+        const response = await updateBookingStatusByTimeService();
+        res.json(response);
+    } catch (error) {
+        console.error('Error in updateBookingStatus controller:', error.message);
+        res.status(500).json({
+            error: 'Internal Server Error',
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+module.exports = { getBookingController, getBookingByIdController, postBookingController, updateBookingStatusController }
