@@ -26,6 +26,7 @@
     "nodemailer": "^9.0.3",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "razorpay": "^2.9.8",
     "sequelize": "^6.37.8",
     "streamifier": "^0.1.1",
     "uuid": "^14.0.0",

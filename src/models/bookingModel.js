@@ -90,6 +90,10 @@ const initializeBooking = () => {
                 type: DataTypes.ENUM(...bookingType),
                 allowNull: false,
             },
+            cancellationProtection: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
             instructions: {
                 type: DataTypes.TEXT,
                 allowNull: true,

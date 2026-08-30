@@ -5,6 +5,7 @@ const { customerRouter } = require('./customerRoutes');
 const { hostRoutes } = require('./hostRoutes');
 const { petProfileRoutes } = require('./petProfileRoutes');
 const { bookingRoutes } = require('./bookingRoutes');
+const { paymentRoutes } = require('./paymentRouter');
 
 const Router = express.Router();
 
@@ -14,5 +15,6 @@ Router.use('/customers', customerRouter);
 Router.use('/host', hostRoutes);
 Router.use('/petProfile', petProfileRoutes);
 Router.use('/bookings', bookingRoutes);
+Router.use('/payment', paymentRoutes);
 
 module.exports = Router;
