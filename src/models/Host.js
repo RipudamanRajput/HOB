@@ -161,25 +161,31 @@ const initializeHost = () => {
         },
         sizeOfCages: {
             type: DataTypes.JSON,
-            allowNull: false,
+            allowNull: true,
             validate: {
                 isValidSizeOfCages(value) {
+                    // Allow null or undefined
+                    if (value === null || value === undefined) {
+                        return;
+                    }
+                    // Must be an array if value is provided
                     if (!Array.isArray(value)) {
                         throw new Error("sizeOfCages must be an array.");
                     }
 
                     value.forEach(item => {
                         if (!PetTypes.includes(item.petType)) {
-                            throw new Error(`Invalid petType: ${item.petType} in sizeOfCages.`);
+                            throw new Error(
+                                `Invalid petType: ${item.petType} in sizeOfCages.`
+                            );
                         }
-
                         ["length", "breadth", "height"].forEach(dimension => {
                             if (
                                 typeof item[dimension] !== "number" ||
-                                item[dimension] <= 0
+                                item[dimension] < 0
                             ) {
                                 throw new Error(
-                                    `${dimension} must be a positive number for petType: ${item.petType} in sizeOfCages.`
+                                    `${dimension} must be a non-negative number for petType: ${item.petType} in sizeOfCages.`
                                 );
                             }
                         });
