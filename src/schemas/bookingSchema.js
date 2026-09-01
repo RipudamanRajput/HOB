@@ -7,7 +7,7 @@ const AmenitySchema = z.object({
 });
 
 const createBookingSchema = z.object({
-    petId: z.string().uuid(),
+    petIds: z.array(z.string().uuid()).min(1),
     hostId: z.string().uuid(),
     status: z.enum(bookingStatus).optional(),
     checkIn: z.coerce.date().refine((date) => {
