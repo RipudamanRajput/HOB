@@ -85,7 +85,13 @@ const uploadHostfiles = async (req, res, next) => {
             const results = await Promise.all(
                 req.files.propertyPhotos.map(uploadFileHostGallery)
             );
-            req.body.propertyPhotos = results.map(file => file.url);
+            const existingPhotos = req.body.propertyPhotos || [];
+
+            req.body.propertyPhotos = [
+                ...(Array.isArray(existingPhotos) ? existingPhotos : [existingPhotos]),
+                ...results.map(file => file.url)
+            ];
+            // req.body.propertyPhotos = results.map(file => file.url);
         }
 
         // businessProof (Multiple)
