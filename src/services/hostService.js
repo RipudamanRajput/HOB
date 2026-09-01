@@ -55,7 +55,8 @@ const updateHostPropertyService = async (req, res) => {
         pricePerPet,
         Services,
         amenities,
-        paidAmenities
+        paidAmenities,
+        propertyPhotos
     } = req.body;
 
     const updateData = {};
@@ -94,6 +95,10 @@ const updateHostPropertyService = async (req, res) => {
 
     if (Services !== undefined) {
         updateData.Services = Services;
+    }
+
+    if (propertyPhotos !== undefined) {
+        updateData.propertyPhotos = propertyPhotos;
     }
 
     const [updatedRows] = await Host.update(updateData, {

@@ -108,7 +108,7 @@ const uploadHostfiles = async (req, res, next) => {
 const handleHostUpload = (req, res, next) => {
     const uploadHostFiles = upload.fields([
         { name: 'noc', maxCount: 2 },
-        { name: 'propertyPhotos', maxCount: 6 },
+        { name: 'propertyPhotos', maxCount: 3 },
         { name: 'idProof', maxCount: 2 },
         { name: 'addressProof', maxCount: 2 },
         { name: 'businessProof', maxCount: 3 }
@@ -116,7 +116,7 @@ const handleHostUpload = (req, res, next) => {
 
     const fileLimits = {
         noc: 2,
-        propertyPhotos: 6,
+        propertyPhotos: 3,
         idProof: 2,
         addressProof: 2,
         businessProof: 3
@@ -151,4 +151,47 @@ const handleHostUpload = (req, res, next) => {
     });
 };
 
-module.exports = { uploadHostfiles, handleHostUpload };
+const updateHostFiles = (req, res, next) => {
+    if (!req.files) {
+        // return next();
+    }
+    const uploadHostFiles = upload.fields([
+        { name: 'propertyPhotos', maxCount: 3 }
+    ]);
+
+    const fileLimits = {
+        propertyPhotos: 3
+    };
+    uploadHostFiles(req, res, (err) => {
+        if (err) {
+            console.error('Upload error:', err);
+
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+                    const field = err.field;
+
+                    return res.status(400).json({
+                        success: false,
+                        message: `${field} can contain maximum ${fileLimits[field]} files`
+                    });
+                }
+
+                return res.status(400).json({
+                    success: false,
+                    message: err.message
+                });
+            }
+
+            return res.status(500).json({
+                success: false,
+                message: err.message || 'File upload failed'
+            });
+        }
+        if (req.body.data) {
+            req.body = JSON.parse(req.body.data);
+        }
+        next();
+    });
+};
+
+module.exports = { uploadHostfiles, handleHostUpload, updateHostFiles };
