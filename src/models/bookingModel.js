@@ -41,14 +41,12 @@ const initializeBooking = () => {
             hostId: {
                 type: DataTypes.UUID,
                 allowNull: false,
-
                 references: {
                     model: HostModel,
-                    key: "userId",
+                    key: "id"
                 },
-
                 onDelete: "CASCADE",
-                onUpdate: "CASCADE",
+                onUpdate: "CASCADE"
             },
 
             // Multiple pets in one booking
@@ -227,8 +225,8 @@ const initializeBooking = () => {
 
     Booking.belongsTo(HostModel, {
         foreignKey: "hostId",
-        targetKey: "userId",
-        as: "host",
+        targetKey: "id",
+        as: "host"
     });
 
     CustomerModel.hasMany(Booking, {
@@ -239,10 +237,9 @@ const initializeBooking = () => {
 
     HostModel.hasMany(Booking, {
         foreignKey: "hostId",
-        sourceKey: "userId",
-        as: "bookings",
+        sourceKey: "id",
+        as: "bookings"
     });
-
     return Booking;
 };
 
