@@ -30,45 +30,116 @@ const getBookingByIdController = async (req, res) => {
 
 const postBookingController = async (req, res) => {
     const { userId } = req.params;
-    req.body.userId = userId;
-    const petProfileId = req.body.petId;
-    const hostId = req.body.hostId;
+
     try {
-        const petProfile = await getPetProfileByIdService(petProfileId)
-        if (!petProfile) {
+        // Set userId from URL params
+        req.body.userId = userId;
+
+        const { petIds, hostId } = req.body;
+
+        // -----------------------------
+        // Validate petIds
+        // -----------------------------
+        if (!Array.isArray(petIds) || petIds.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: "pet profile not found"
-            })
+                message: "At least one pet is required."
+            });
         }
-        const host = await getHostByUserIDService(hostId)
+
+        // Remove duplicate pet IDs
+        const uniquePetIds = [...new Set(petIds)];
+
+        if (uniquePetIds.length !== petIds.length) {
+            return res.status(400).json({
+                success: false,
+                message: "Duplicate pet IDs are not allowed."
+            });
+        }
+
+        // -----------------------------
+        // Validate all pet profiles
+        // -----------------------------
+        for (const petId of uniquePetIds) {
+
+            const petProfile = await getPetProfileByIdService(petId);
+
+            if (!petProfile) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Pet profile not found: ${petId}`
+                });
+            }
+
+            // Make sure pet belongs to the customer
+            if (petProfile.userId !== userId) {
+                return res.status(403).json({
+                    success: false,
+                    message: `Pet ${petId} does not belong to this customer.`
+                });
+            }
+        }
+
+        // -----------------------------
+        // Validate host
+        // -----------------------------
+        if (!hostId) {
+            return res.status(400).json({
+                success: false,
+                message: "hostId is required."
+            });
+        }
+
+        const host = await getHostByUserIDService(hostId);
+
         if (!host) {
             return res.status(400).json({
                 success: false,
-                message: "host not found"
-            })
+                message: "Host not found."
+            });
         }
+
+        // -----------------------------
+        // Check host status
+        // -----------------------------
         if (host.status === "suspended") {
             return res.status(400).json({
                 success: false,
-                message: "This host is suspended and cannot accept bookings."
-            })
+                message:
+                    "This host is suspended and cannot accept bookings."
+            });
         }
-        const BookingId = await addBookingService(req.body);
-        res.status(201).json({
-            message: 'Booking created successfully',
+
+        // -----------------------------
+        // Set validated pet IDs
+        // -----------------------------
+        req.body.petIds = uniquePetIds;
+
+        // -----------------------------
+        // Create booking
+        // -----------------------------
+        const bookingId = await addBookingService(req.body);
+
+        return res.status(201).json({
             success: true,
-            BookingId: BookingId
+            message: "Booking created successfully",
+            bookingId
         });
+
     } catch (error) {
-        console.error('Error in postBooking controller:', error.message);
-        res.status(500).json({
-            error: 'Internal Server Error',
+        console.error(
+            "Error in postBooking controller:",
+            error
+        );
+
+        return res.status(500).json({
+            error: "Internal Server Error",
             success: false,
             message: error.message
         });
     }
 };
+
 
 const updateBookingStatusController = async (req, res) => {
     try {
