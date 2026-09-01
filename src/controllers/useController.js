@@ -1,3 +1,4 @@
+const { addCustomerService } = require("../services/customerService");
 const { addUser, getUsers: getUsersService, getUserById: getUserByIdService, updateUser: updateUserService, getUserByEmailService } = require("../services/userService");
 const { expiresIn } = require("./authController");
 const jwt = require('jsonwebtoken');
@@ -43,6 +44,11 @@ const postUsers = async (req, res) => {
             });
         }
         const userId = await addUser(req.body);
+        await addCustomerService({
+            "userId": userId,
+            "name": req.body.name,
+            "email": req.body.email
+        });
         const userdetails = await getUserByIdService(userId);
         const token = generateToken(userdetails);
 

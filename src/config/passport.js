@@ -1,6 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { User: getUser } = require('../models/User');
+const { Customer: getCustomer } = require('../models/Customer');
 
 const initializePassport = () => {
   passport.use(
@@ -8,13 +9,14 @@ const initializePassport = () => {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.NODE_ENV === 'production' 
+        callbackURL: process.env.NODE_ENV === 'production'
           ? `${process.env.BASE_URL}/api/auth/callback`
           : '/api/auth/callback',
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
           const User = getUser();
+          const Customer = getCustomer();
           // Check if user exists
           let user = await User.findOne({ where: { googleId: profile.id } });
 
@@ -25,6 +27,11 @@ const initializePassport = () => {
               email: profile.emails[0].value,
               name: profile.displayName,
               avatar: profile.photos[0]?.value,
+            });
+            await Customer.create({
+              "userId": user.id,
+              "name": profile.displayName,
+              "email": profile.emails[0].value
             });
           }
 

@@ -31,10 +31,6 @@ const initializeCustomer = () => {
             unique: false,
             allowNull: false
         },
-        contactNumber: {
-            type: DataTypes.STRING,
-            unique: false,
-        },
         email: {
             type: DataTypes.STRING,
             unique: true,
