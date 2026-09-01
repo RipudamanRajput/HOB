@@ -71,7 +71,7 @@ const initializePetProfileModel = () => {
         },
         petSize: {
             type: DataTypes.ENUM(...petSize),
-            allowNull: false
+            allowNull: true
         },
         vacinationdate: {
             type: DataTypes.DATE,

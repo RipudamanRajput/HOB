@@ -13,7 +13,7 @@ const createPetProfileSchema = z.object({
     colorAndMarkings: z.string().optional(),
     breed: z.string().optional(),
     petGender: z.enum(petGender),
-    petSize: z.enum(petSize),
+    petSize: z.enum(petSize).optional(),
     vacinationdate: z.string().datetime().optional(),
     tickTreatmentStatus: z.boolean().optional(),
     healthIssues: z.boolean().optional(),
