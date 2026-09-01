@@ -82,7 +82,6 @@ const initializeBooking = () => {
             status: {
                 type: DataTypes.ENUM(...bookingStatus),
                 defaultValue: "initiated",
-                allowNull: false,
             },
 
             // Check-in date/time
