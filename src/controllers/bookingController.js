@@ -1,5 +1,5 @@
 const { getBookingService, getBookingByIdService, addBookingService, updateBookingStatusByTimeService } = require("../services/bookingService");
-const { getHostByUserIDService } = require("../services/hostService");
+const { getHostByIdService } = require("../services/hostService");
 const { getPetProfileByIdService } = require("../services/petProfileService");
 
 
@@ -90,7 +90,7 @@ const postBookingController = async (req, res) => {
             });
         }
 
-        const host = await getHostByUserIDService(hostId);
+        const host = await getHostByIdService(hostId);
 
         if (!host) {
             return res.status(400).json({
