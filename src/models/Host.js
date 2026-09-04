@@ -49,9 +49,33 @@ const initializeHost = () => {
             allowNull: false
         },
         address: {
-            type: DataTypes.STRING,
-            unique: false,
-            allowNull: false
+            type: DataTypes.JSON,
+            allowNull: false,
+            validate: {
+                isValidAddress(value) {
+                    if (!value || typeof value !== "object" || Array.isArray(value)) {
+                        throw new Error("Address must be an object.");
+                    }
+
+                    const requiredFields = [
+                        "street",
+                        "area",
+                        "city",
+                        "state",
+                        "pincode"
+                    ];
+
+                    for (const field of requiredFields) {
+                        if (
+                            value[field] === undefined ||
+                            value[field] === null ||
+                            value[field] === ""
+                        ) {
+                            throw new Error(`${field} is required in address.`);
+                        }
+                    }
+                }
+            }
         },
         bussinessType: {
             type: DataTypes.ENUM(...bussinessType),
