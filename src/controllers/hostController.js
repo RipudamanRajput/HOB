@@ -1,5 +1,8 @@
 const { getHostsService, addHostService, getHostByIdService, getHostByUserIDService, getHostForAdminsService, updateHostService, updateHostPropertyService } = require("../services/hostService");
 const { updateUserRoleService } = require("../services/userService");
+const { Host: getHost } = require("../models/Host");
+const { HostHoliday: getHostHolidayModel } = require('../models/HostHolidayModel');
+const { Op } = require("sequelize");
 
 
 const getHosts = async (req, res) => {
@@ -127,6 +130,7 @@ const putHosts = async (req, res) => {
         });
     }
 };
+
 const putHostProperty = async (req, res) => {
     try {
         const { id } = req.params
@@ -150,4 +154,114 @@ const putHostProperty = async (req, res) => {
     }
 };
 
-module.exports = { getHosts, getHostById, postHosts, getHostsforAdmin, putHosts, putHostProperty };
+const updateHostHolidayStatusService = async (req, res) => {
+    const Host = getHost();
+    const HostHoliday = getHostHolidayModel();
+    const now = new Date();
+    console.log('Host holiday status cron run at: ' + now);
+    try {
+        // =====================================================
+        // 1. FIND CURRENTLY ACTIVE HOLIDAYS
+        // =====================================================
+        const activeHolidays = await HostHoliday.findAll({
+            where: {
+                fromDate: {
+                    [Op.lte]: now
+                },
+                toDate: {
+                    [Op.gte]: now
+                }
+            },
+            attributes: [
+                "hostId",
+                "fromDate",
+                "toDate",
+                "reason"
+            ]
+        });
+
+        // =====================================================
+        // 2. SUSPEND VERIFIED HOSTS
+        // =====================================================
+        let suspendedCount = 0;
+        for (const holiday of activeHolidays) {
+            const [updatedRows] = await Host.update(
+                {
+                    status: "suspend",
+                    accountSuspendReason:
+                        `Host holiday: ${holiday.reason || "Holiday"}`
+                },
+                {
+                    where: {
+                        id: holiday.hostId,
+                        status: "verified"
+                    }
+                }
+            );
+
+            suspendedCount += updatedRows;
+        }
+
+        // =====================================================
+        // 3. FIND EXPIRED HOLIDAYS
+        // =====================================================
+        const expiredHolidays = await HostHoliday.findAll({
+            where: {
+                toDate: {
+                    [Op.lt]: now
+                }
+            },
+            attributes: [
+                "hostId"
+            ]
+        });
+
+        // =====================================================
+        // 4. VERIFY HOSTS WHO WERE SUSPENDED FOR HOLIDAY
+        // =====================================================
+        let verifiedCount = 0;
+        for (const holiday of expiredHolidays) {
+            const [updatedRows] = await Host.update(
+                {
+                    status: "verified",
+                    accountSuspendReason: null
+                },
+                {
+                    where: {
+                        id: holiday.hostId,
+                        status: "suspend",
+                        accountSuspendReason: {
+                            [Op.like]: "Host holiday:%"
+                        }
+                    }
+                }
+            );
+            verifiedCount += updatedRows;
+        }
+        console.log('Host holiday status cron completed:', {
+            suspendedCount,
+            verifiedCount,
+            currentTime: now
+        });
+        return res.json({
+            message: "Host holiday status update completed.",
+            success: true,
+            suspendedCount,
+            verifiedCount
+        });
+
+    } catch (error) {
+        console.error(
+            "Host holiday status update error:",
+            error
+        );
+        res.status(500).json({
+            error: "Internal Server Error",
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
+module.exports = { getHosts, getHostById, postHosts, getHostsforAdmin, putHosts, putHostProperty, updateHostHolidayStatusService };

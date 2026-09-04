@@ -1,6 +1,7 @@
 const { initializeBooking } = require('../models/bookingModel');
 const { initializeCustomer } = require('../models/Customer');
 const { initializeHost } = require('../models/Host');
+const { initializeHostHolidayModel } = require('../models/HostHolidayModel');
 const { initializePaymentModel } = require('../models/paymentModel');
 const { initializePetProfileModel } = require('../models/petProfileModel');
 const { initializeUser } = require('../models/User');
@@ -13,6 +14,7 @@ function tableInitializer() {
     initializePaymentModel();
     initializePetProfileModel();
     initializeBooking();
+    initializeHostHolidayModel();
 }
 
 module.exports = { tableInitializer };

@@ -25,7 +25,13 @@ const updateHostSchema = z.object({
 const createHostSchema = z.object({
     userId: z.string().uuid(),
     propertyName: z.string().min(2).max(100),
-    address: z.string().min(5).max(200),
+    address: z.object({
+        street: z.string().min(1).optional(),
+        area: z.string().min(1),
+        city: z.string().min(1),
+        state: z.string().min(1),
+        pincode: z.string().min(4).max(10)
+    }),
     about: z.string().optional(),
     bussinessType: z.enum(bussinessType),
     propertyType: z.enum(property),
@@ -34,7 +40,7 @@ const createHostSchema = z.object({
     capacity: z.array(z.any()).min(1),
     numberOfRooms: z.record(z.any()),
     sizeOfRooms: z.array(z.any()).min(1),
-    sizeOfCages: z.array(z.any()),
+    sizeOfCages: z.array(z.any()).optional(),
     pricePerPet: z.array(z.any()).min(1),
     Services: z.array(z.enum(Services)).min(1),
     nameOfBusiness: z.string().optional(),

@@ -11,6 +11,8 @@ const bookingRoutes = express.Router();
 bookingRoutes.get('/get/:id', authMiddleware, IDValidation(userIDParamSchema), userIDValidation(userIDParamSchema), getBookingByIdController);
 bookingRoutes.post('/add', authMiddleware, userIDValidation(userIDParamSchema), payloadValidation(createBookingSchema), postBookingController);
 bookingRoutes.get('/get', authMiddleware, userIDValidation(userIDParamSchema), getBookingController);
-bookingRoutes.put('/update/status-job', updateBookingStatusController);
+
+// to update the status of booking by CRON
+bookingRoutes.get('/update/status-job', updateBookingStatusController);
 
 module.exports = { bookingRoutes };

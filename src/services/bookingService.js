@@ -51,7 +51,7 @@ const updateBookingStatusByTimeService = async () => {
         const Booking = getBookingModel();
 
         const now = new Date();
-         console.log('Booking status cron run at: ' + now);
+        console.log('Booking status cron run at: ' + now);
 
         // Start of today: 00:00:00
         const startOfToday = new Date(now);
@@ -118,7 +118,7 @@ const updateBookingStatusByTimeService = async () => {
             currentTime: now
         });
 
-        
+
         return {
             runningUpdated,
             completedUpdated

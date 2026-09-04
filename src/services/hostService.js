@@ -128,17 +128,33 @@ const getHostsService = async (
     const offset = (page - 1) * limit;
 
     const where = {};
+
     if (propertyName) {
         where.propertyName = { [Op.like]: `%${propertyName}%` };
     }
+
     if (status) {
         where.status = status;
     } else {
         where.status = "verified";
     }
+
     if (address) {
-        where.address = { [Op.like]: `%${address}%` };
+        const searchAddress = String(address)
+            .trim()
+            .replace(/'/g, "''");
+
+        where[Op.and] = where[Op.and] || [];
+
+        where[Op.and].push(
+            Sequelize.literal(`
+            LOWER(
+                CAST(address AS CHAR)
+            ) LIKE LOWER('%${searchAddress}%')
+        `)
+        );
     }
+
     if (bussinessType) {
         if (typeof bussinessType === "string") {
             try {
@@ -191,9 +207,11 @@ const getHostsService = async (
         `)
         );
     }
+
     if (nameOfBusiness) {
         where.nameOfBusiness = { [Op.like]: `%${nameOfBusiness}%` };
     }
+
     if (boardingOfPets) {
         if (typeof boardingOfPets === "string") {
             try {
@@ -238,7 +256,7 @@ const getHostsService = async (
             );
         }
     }
-    console.log("Where clause for getHostsService:", where);
+
     const { count, rows } = await Host.findAndCountAll({
         where,
         limit,
@@ -295,51 +313,23 @@ const getHostForAdminsService = async (
         where.status = "verified";
     }
 
-    // if (address) {
-    //     where.address = { [Op.like]: `%${address}%` };
-    // }
-
     if (address) {
-        const searchAddress = address.trim().replace(/'/g, "''");
+        const searchAddress = String(address)
+            .trim()
+            .replace(/'/g, "''");
 
         where[Op.and] = where[Op.and] || [];
 
         where[Op.and].push(
             Sequelize.literal(`
-            (
-                JSON_UNQUOTE(
-                    JSON_EXTRACT(address, '$.street')
-                ) LIKE '%${searchAddress}%'
-
-                OR
-
-                JSON_UNQUOTE(
-                    JSON_EXTRACT(address, '$.area')
-                ) LIKE '%${searchAddress}%'
-
-                OR
-
-                JSON_UNQUOTE(
-                    JSON_EXTRACT(address, '$.city')
-                ) LIKE '%${searchAddress}%'
-
-                OR
-
-                JSON_UNQUOTE(
-                    JSON_EXTRACT(address, '$.state')
-                ) LIKE '%${searchAddress}%'
-
-                OR
-
-                JSON_UNQUOTE(
-                    JSON_EXTRACT(address, '$.pincode')
-                ) LIKE '%${searchAddress}%'
-            )
+            LOWER(
+                CAST(address AS CHAR)
+            ) LIKE LOWER('%${searchAddress}%')
         `)
         );
     }
 
-      if (nameOfBusiness) {
+    if (nameOfBusiness) {
         where.nameOfBusiness = { [Op.like]: `%${nameOfBusiness}%` };
     }
 
@@ -368,7 +358,7 @@ const getHostForAdminsService = async (
             );
         }
     }
-    
+
     const { count, rows } = await Host.findAndCountAll({
         where,
         limit,
