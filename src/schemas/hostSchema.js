@@ -47,7 +47,7 @@ const createHostSchema = z.object({
     limitationsForGuests: z.number().int().min(0).optional(),
     propertyAreaSize: z.float32().optional(),
     numberOfCareTakers: z.number().int().min(1),
-    experienceWithPets: z.string().min(5).max(200),
+    experienceWithPets: z.string().min(5),
     rule: z.string().optional(),
     amenities: z.array(AmenitiesEnum).optional(),
     paidAmenities: z.array(z.any()).min(0),
