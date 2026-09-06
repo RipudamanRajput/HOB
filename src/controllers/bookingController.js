@@ -1,6 +1,7 @@
-const { getBookingService, getBookingByIdService, addBookingService, updateBookingStatusByTimeService } = require("../services/bookingService");
-const { getHostByIdService } = require("../services/hostService");
+const { getBookingService, getBookingByIdService, addBookingService, updateBookingStatusByTimeService, cancelBookingService } = require("../services/bookingService");
+const { getHostByIdService, getHostByUserIDService } = require("../services/hostService");
 const { getPetProfileByIdService } = require("../services/petProfileService");
+const { getUserById } = require("../services/userService");
 
 
 const getBookingController = async (req, res) => {
@@ -30,59 +31,17 @@ const getBookingByIdController = async (req, res) => {
 
 const postBookingController = async (req, res) => {
     const { userId } = req.params;
-
     try {
-        // Set userId from URL params
         req.body.userId = userId;
+        const hostResponse = await getHostByUserIDService(userId);
+        if (hostResponse && hostResponse.id) {
+            return res.status(400).json({
+                success: false,
+                message: `You are a host and cannot make bookings.`
+            });
+        }
 
         const { petIds, hostId } = req.body;
-
-        // -----------------------------
-        // Validate petIds
-        // -----------------------------
-        if (!Array.isArray(petIds) || petIds.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "At least one pet is required."
-            });
-        }
-
-        // Remove duplicate pet IDs
-        const uniquePetIds = [...new Set(petIds)];
-
-        if (uniquePetIds.length !== petIds.length) {
-            return res.status(400).json({
-                success: false,
-                message: "Duplicate pet IDs are not allowed."
-            });
-        }
-
-        // -----------------------------
-        // Validate all pet profiles
-        // -----------------------------
-        for (const petId of uniquePetIds) {
-
-            const petProfile = await getPetProfileByIdService(petId);
-
-            if (!petProfile) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Pet profile not found: ${petId}`
-                });
-            }
-
-            // Make sure pet belongs to the customer
-            if (petProfile.userId !== userId) {
-                return res.status(403).json({
-                    success: false,
-                    message: `Pet ${petId} does not belong to this customer.`
-                });
-            }
-        }
-
-        // -----------------------------
-        // Validate host
-        // -----------------------------
         if (!hostId) {
             return res.status(400).json({
                 success: false,
@@ -91,7 +50,6 @@ const postBookingController = async (req, res) => {
         }
 
         const host = await getHostByIdService(hostId);
-
         if (!host) {
             return res.status(400).json({
                 success: false,
@@ -99,9 +57,6 @@ const postBookingController = async (req, res) => {
             });
         }
 
-        // -----------------------------
-        // Check host status
-        // -----------------------------
         if (host.status === "suspended") {
             return res.status(400).json({
                 success: false,
@@ -110,28 +65,59 @@ const postBookingController = async (req, res) => {
             });
         }
 
-        // -----------------------------
-        // Set validated pet IDs
-        // -----------------------------
+        if (!Array.isArray(petIds) || petIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "At least one pet is required."
+            });
+        }
+
+        const uniquePetIds = [...new Set(petIds)];
+        if (uniquePetIds.length !== petIds.length) {
+            return res.status(400).json({
+                success: false,
+                message: "Duplicate pet IDs are not allowed."
+            });
+        }
+
+        const hostBoardingPets = host.boardingOfPets || [];
+        for (const petId of uniquePetIds) {
+            const petProfile = await getPetProfileByIdService(petId);
+            if (!petProfile) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Pet profile not found: ${petId}`
+                });
+            }
+
+            if (petProfile.userId !== userId) {
+                return res.status(403).json({
+                    success: false,
+                    message: `Pet ${petId} does not belong to this customer.`
+                });
+            }
+
+            if (!hostBoardingPets.includes(petProfile.petType)) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        `Host does not accept ${petProfile.petType} pets.`
+                });
+            }
+        }
+
         req.body.petIds = uniquePetIds;
-
-        // -----------------------------
-        // Create booking
-        // -----------------------------
         const bookingId = await addBookingService(req.body);
-
         return res.status(201).json({
             success: true,
             message: "Booking created successfully",
             bookingId
         });
-
     } catch (error) {
         console.error(
             "Error in postBooking controller:",
             error
         );
-
         return res.status(500).json({
             error: "Internal Server Error",
             success: false,
@@ -139,7 +125,6 @@ const postBookingController = async (req, res) => {
         });
     }
 };
-
 
 const updateBookingStatusController = async (req, res) => {
     try {
@@ -155,4 +140,55 @@ const updateBookingStatusController = async (req, res) => {
     }
 };
 
-module.exports = { getBookingController, getBookingByIdController, postBookingController, updateBookingStatusController }
+const cancelBookingController = async (req, res) => {
+    try {
+        const bookingId = req.params.id;
+        const userId = req.params.userId;
+        const UserResponse = await getUserById(userId);
+        const booking = await getBookingByIdService(bookingId);
+
+        if (["running", "completed"].includes(booking.status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Cannot cancel a running or completed booking."
+            });
+        }
+
+        if (!req.body.cancellationReason) {
+            return res.status(400).json({
+                success: false,
+                message: "Cancellation reason is required. {cancellationReason}"
+            });
+        }
+
+        if (req.body.cancellationReason && typeof req.body.cancellationReason !== 'string') {
+            return res.status(400).json({
+                success: false,
+                message: "Cancellation reason must be a string."
+            });
+        }
+
+        const CancellationData = {
+            bookingId: bookingId,
+            cancellationBy: UserResponse.role,
+            cancellationReason: req.body.cancellationReason || "No reason provided",
+            cancellationDate: new Date()
+        }
+
+        const updatedBooking = await cancelBookingService(CancellationData);
+        return res.status(200).json({
+            success: true,
+            message: "Booking canceled successfully",
+            booking: updatedBooking
+        });
+    } catch (error) {
+        console.error('Error in cancelBooking controller:', error.message);
+        return res.status(500).json({
+            error: 'Internal Server Error',
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+module.exports = { getBookingController, getBookingByIdController, postBookingController, updateBookingStatusController, cancelBookingController }

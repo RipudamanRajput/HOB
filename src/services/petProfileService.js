@@ -44,4 +44,54 @@ const getPetProfileByIdService = async (petProfileId) => {
     return petProfile;
 }
 
-module.exports = { addPetProfileService, getPetProfilesService, getPetProfileByIdService };
+const updatePetProfileService = async (
+    petProfileId,
+    petProfileData
+) => {
+    const {
+        name,
+        contactNumber,
+        email,
+        addressPet,
+        petName,
+        petAge,
+        petSize,
+        vacinationdate,
+        tickTreatmentStatus,
+        healthIssues,
+        healthIssuesDescription,
+        medicalHistory,
+        medicalHistoryDescription,
+        behavioralIssues,
+        behavioralIssuesDescription
+    } = petProfileData;
+
+    const petData = {
+        name,
+        contactNumber,
+        email,
+        addressPet,
+        petName,
+        petAge,
+        petSize,
+        vacinationdate,
+        tickTreatmentStatus,
+        healthIssues,
+        healthIssuesDescription,
+        medicalHistory,
+        medicalHistoryDescription,
+        behavioralIssues,
+        behavioralIssuesDescription
+    };
+    const PetProfile = getPetProfileModel();
+    const petProfile = await PetProfile.findByPk(
+        petProfileId
+    );
+    if (!petProfile) {
+        throw new Error('Pet profile not found');
+    }
+    await petProfile.update(petData);
+    return petProfile;
+};
+
+module.exports = { addPetProfileService, getPetProfilesService, getPetProfileByIdService, updatePetProfileService };

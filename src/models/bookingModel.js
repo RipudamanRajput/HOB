@@ -1,10 +1,9 @@
 
 const { DataTypes } = require("sequelize");
-
 const { getSequelize } = require("../config/db");
 const { Customer: getCustomer } = require("./Customer");
 const { Host: getHost } = require("./Host");
-const { bookingType, amenities, bookingStatus } = require("../config/pets");
+const { bookingType, amenities, bookingStatus, Role } = require("../config/pets");
 
 let Booking = null;
 
@@ -136,6 +135,21 @@ const initializeBooking = () => {
             cancellationProtection: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
+            },
+
+            cancellationReason: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+
+            cancellationDate: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
+
+            cancellationBy: {
+                type: DataTypes.ENUM(...Role),
+                allowNull: true,
             },
 
             emergencyBoardingPrice: {

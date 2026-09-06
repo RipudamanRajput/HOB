@@ -1,3 +1,9 @@
+let Role = [
+    'customer',
+    'host',
+    'admin'
+]
+
 let PetTypes = [
     "Dog",
     "Cat",
@@ -86,5 +92,6 @@ module.exports = {
     bussinessType,
     property,
     Services,
-    petSize
+    petSize,
+    Role
 };

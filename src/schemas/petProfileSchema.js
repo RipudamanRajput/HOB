@@ -48,4 +48,26 @@ const createPetProfileSchema = z.object({
     }
 });
 
-module.exports = { createPetProfileSchema }
+const updatePetProfileSchema = z.object({
+    name: z.string().min(2).max(100).optional(),
+    contactNumber: z.string().regex(/^[0-9]{10,15}$/).optional(),
+    email: z.string().email().optional(),
+    addressPet: z.string().min(5).max(255).optional(),
+    petType: z.enum(PetTypes).optional(),
+    petName: z.string().min(1).max(100).optional(),
+    petAge: z.float32().min(0).optional(),
+    colorAndMarkings: z.string().optional(),
+    breed: z.string().optional(),
+    petGender: z.enum(petGender).optional(),
+    petSize: z.enum(petSize).optional(),
+    vacinationdate: z.string().datetime().optional(),
+    tickTreatmentStatus: z.boolean().optional(),
+    healthIssues: z.boolean().optional(),
+    healthIssuesDescription: z.string().optional(),
+    medicalHistory: z.boolean().optional(),
+    medicalHistoryDescription: z.string().optional(),
+    behavioralIssues: z.boolean().optional(),
+    behavioralIssuesDescription: z.string().optional()
+});
+
+module.exports = { createPetProfileSchema, updatePetProfileSchema };

@@ -118,7 +118,6 @@ const updateBookingStatusByTimeService = async () => {
             currentTime: now
         });
 
-
         return {
             runningUpdated,
             completedUpdated
@@ -129,10 +128,28 @@ const updateBookingStatusByTimeService = async () => {
             'Error updating booking statuses:',
             error
         );
-
         throw error;
     }
 };
 
+const cancelBookingService = async (cancellationData) => {
+    const Booking = getBookingModel();
+    const booking = await Booking.findByPk(cancellationData.bookingId);
+    if (!booking) {
+        throw new Error('Booking not found');
+    }
+    if (booking.status === 'cancelled') {
+        throw new Error('Booking is already cancelled');
+    }
+    const updatedBooking = await Booking.update({
+        status: 'cancelled',
+        cancellationBy: cancellationData.cancellationBy,
+        cancellationReason: cancellationData.cancellationReason,
+        cancellationDate: cancellationData.cancellationDate
+    }, {
+        where: { id: cancellationData.bookingId }
+    });
+    return updatedBooking;
+};
 
-module.exports = { addBookingService, getBookingService, getBookingByIdService, updateBookingStatusByTimeService }
+module.exports = { addBookingService, getBookingService, getBookingByIdService, updateBookingStatusByTimeService, cancelBookingService }

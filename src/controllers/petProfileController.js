@@ -1,4 +1,4 @@
-const { getPetProfilesService, getPetProfileByIdService, addPetProfileService } = require("../services/petProfileService");
+const { getPetProfilesService, getPetProfileByIdService, addPetProfileService, updatePetProfileService } = require("../services/petProfileService");
 
 
 const getPetProfileController = async (req, res) => {
@@ -46,4 +46,38 @@ const postPetProfileController = async (req, res) => {
     }
 };
 
-module.exports = { getPetProfileController, getPetProfileByIdController, postPetProfileController };
+const updatePetProfileController = async (req, res) => {
+    const { petProfileId } = req.params;
+    const { name,
+        contactNumber,
+        email,
+        addressPet,
+        petName,
+        petAge,
+        petSize,
+        vacinationdate,
+        tickTreatmentStatus,
+        healthIssues,
+        healthIssuesDescription,
+        medicalHistory,
+        medicalHistoryDescription,
+        behavioralIssues,
+        behavioralIssuesDescription } = req.body;
+    try {
+        const updatedPetProfile = await updatePetProfileService(petProfileId, req.body);
+        res.json({
+            message: 'Pet profile updated successfully',
+            success: true,
+            petProfile: updatedPetProfile
+        });
+    } catch (error) {
+        console.error('Error in updatePetProfile Controller:', error);
+        res.status(500).json({
+            error: 'Internal Server Error',
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+module.exports = { getPetProfileController, getPetProfileByIdController, postPetProfileController, updatePetProfileController };

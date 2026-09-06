@@ -5,12 +5,13 @@ const { userIDValidation, IDValidation } = require('../middleware/userIDValidati
 const { userIDParamSchema } = require('../schemas/userSchema');
 const { payloadValidation } = require('../middleware/payloadValidation');
 const { createBookingSchema } = require('../schemas/bookingSchema');
-const { getBookingByIdController, postBookingController, getBookingController, updateBookingStatusController } = require('../controllers/bookingController');
+const { getBookingByIdController, postBookingController, getBookingController, updateBookingStatusController, cancelBookingController } = require('../controllers/bookingController');
 
 const bookingRoutes = express.Router();
 bookingRoutes.get('/get/:id', authMiddleware, IDValidation(userIDParamSchema), userIDValidation(userIDParamSchema), getBookingByIdController);
 bookingRoutes.post('/add', authMiddleware, userIDValidation(userIDParamSchema), payloadValidation(createBookingSchema), postBookingController);
 bookingRoutes.get('/get', authMiddleware, userIDValidation(userIDParamSchema), getBookingController);
+bookingRoutes.put('/cancel/:id', authMiddleware, IDValidation(userIDParamSchema), userIDValidation(userIDParamSchema), cancelBookingController);
 
 // to update the status of booking by CRON
 bookingRoutes.get('/update/status-job', updateBookingStatusController);
