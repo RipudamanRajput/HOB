@@ -23,7 +23,8 @@ const createBookingSchema = z.object({
     bookingType: z.enum(bookingType),
     instructions: z.string().optional(),
     cancellationProtection: z.boolean().optional(),
-    amenities: z.array(AmenitySchema).optional()
+    amenities: z.array(AmenitySchema).optional(),
+    emergencyBoardingPrice: z.number().min(0, "Emergency boarding price must be a non-negative number").optional()
 }).superRefine((data, ctx) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);

@@ -138,6 +138,11 @@ const initializeBooking = () => {
                 defaultValue: false,
             },
 
+            emergencyBoardingPrice: {
+                type: DataTypes.FLOAT,
+                allowNull: true,
+            },
+
             // Additional instructions
             instructions: {
                 type: DataTypes.TEXT,
