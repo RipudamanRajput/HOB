@@ -1,6 +1,6 @@
 const express = require('express');
 const authMiddleware = require('../middleware/authMiddleware');
-const { IDValidation, userIDValidation } = require('../middleware/userIDValidation');
+const { IDValidation } = require('../middleware/userIDValidation');
 const { userIDParamSchema } = require('../schemas/userSchema');
 const { getHostById, getHosts, postHosts, getHostsforAdmin, putHosts, putHostProperty, updateHostHolidayStatusService } = require('../controllers/hostController');
 const { payloadValidation } = require('../middleware/payloadValidation');
@@ -31,9 +31,9 @@ hostRoutes.put('/put/:id',
     putHostProperty);
 
 // for Hsot Holiday (Admin and Host)
-hostRoutes.get('/holiday/get', authMiddleware, userIDValidation(userIDParamSchema), getHostHolidayController);
-hostRoutes.get('/holiday/get/:id', authMiddleware, userIDValidation(userIDParamSchema), getHostHolidayByIdController);
-hostRoutes.post('/holiday/add', authMiddleware, userIDValidation(userIDParamSchema), payloadValidation(createHostHolidaySchema), postHostHolidayController);
+hostRoutes.get('/holiday/get', authMiddleware, getHostHolidayController);
+hostRoutes.get('/holiday/get/:id', authMiddleware, getHostHolidayByIdController);
+hostRoutes.post('/holiday/add', authMiddleware, payloadValidation(createHostHolidaySchema), postHostHolidayController);
 
 // host Holiday status update by CRON
 hostRoutes.get('/holiday/update/status-job', authMiddleware, updateHostHolidayStatusService);

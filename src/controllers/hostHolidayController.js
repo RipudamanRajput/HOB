@@ -3,26 +3,51 @@ const { getHostByUserIDService } = require("../services/hostService");
 
 const getHostHolidayController = async (req, res) => {
     try {
+        const { userId } = req.params;
+        const host = await getHostByUserIDService(userId);
+        if (!host) {
+            return res.status(400).json({
+                success: false,
+                error: 'User is not a host'
+            });
+        }
         const { page, limit, hostName, fromDate, toDate, hostId } = req.query;
         const hostHolidays = await getHostHolidaysService(page, limit, hostName, fromDate, toDate, hostId);
         res.json(hostHolidays);
     } catch (error) {
         console.error('Error in getHostHoliday Controller:', error.message);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 };
 
 const getHostHolidayByIdController = async (req, res) => {
     try {
-        const hostHolidayId = req.params.id;
-        const hostHoliday = await getHostHolidaysByHostIdService(hostHolidayId);
+        // const hostHolidayId = req.params.id;
+        const { userId } = req.params;
+        const host = await getHostByUserIDService(userId);
+        if (!host) {
+            return res.status(400).json({
+                success: false,
+                error: 'User is not a host'
+            });
+        }
+        const hostHoliday = await getHostHolidaysByHostIdService(host.id);
         if (!hostHoliday) {
-            return res.status(404).json({ error: 'Host holiday not found' });
+            return res.status(404).json({
+                success: false,
+                error: 'Host holiday not found'
+            });
         }
         res.json(hostHoliday);
     } catch (error) {
         console.error('Error in getHostHolidayById Controller:', error.message);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 };
 
@@ -31,7 +56,10 @@ const postHostHolidayController = async (req, res) => {
         const { userId } = req.params;
         const host = await getHostByUserIDService(userId);
         if (!host) {
-            return res.status(400).json({ error: 'User is not a host' });
+            return res.status(400).json({
+                success: false,
+                error: 'User is not a host'
+            });
         }
         req.body.hostId = host.id;
         req.body.hostName = host.propertyName;
@@ -44,8 +72,8 @@ const postHostHolidayController = async (req, res) => {
     } catch (error) {
         console.error('Error in postHostHoliday Controller:', error.message);
         res.status(500).json({
-            error: 'Internal Server Error',
             success: false,
+            error: 'Internal Server Error',
             message: error.message
         });
     }
