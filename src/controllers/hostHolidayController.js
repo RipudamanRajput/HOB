@@ -1,4 +1,5 @@
 const { getHostHolidaysService, getHostHolidaysByHostIdService, addHostHolidayService } = require("../services/HostHoliday");
+const { getHostByUserIDService } = require("../services/hostService");
 
 const getHostHolidayController = async (req, res) => {
     try {
@@ -27,6 +28,12 @@ const getHostHolidayByIdController = async (req, res) => {
 
 const postHostHolidayController = async (req, res) => {
     try {
+        const { userId } = req.params;
+        const host = await getHostByUserIDService(userId);
+        if (!host) {
+            return res.status(400).json({ error: 'User is not a host' });
+        }
+        req.body.hostId = host.id;
         const hostHolidayId = await addHostHolidayService(req.body);
         res.status(201).json({
             message: 'Host holiday created successfully',
