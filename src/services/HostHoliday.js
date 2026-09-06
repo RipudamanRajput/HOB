@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { HostHoliday: getHostHolidayModel } = require('../models/HostHolidayModel');
 
 
