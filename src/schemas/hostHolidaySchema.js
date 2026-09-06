@@ -2,11 +2,9 @@ const { default: z } = require("zod");
 
 
 const createHostHolidaySchema = z.object({
-    hostId: z.string().uuid(),
-    hostName: z.string().min(2).max(100),
     fromDate: z.coerce.date(),
     toDate: z.coerce.date(),
-    reason: z.string().optional()
+    reason: z.string().min(5, "Reason must be at least 5 characters long").optional()
 }).superRefine((data, ctx) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);

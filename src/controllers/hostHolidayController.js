@@ -34,6 +34,7 @@ const postHostHolidayController = async (req, res) => {
             return res.status(400).json({ error: 'User is not a host' });
         }
         req.body.hostId = host.id;
+        req.body.hostName = host.propertyName;
         const hostHolidayId = await addHostHolidayService(req.body);
         res.status(201).json({
             message: 'Host holiday created successfully',
