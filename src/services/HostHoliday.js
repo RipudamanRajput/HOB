@@ -7,7 +7,7 @@ const addHostHolidayService = async (hostHolidayData) => {
     return hostHoliday.id;
 }
 
-const getHostHolidaysService = async (page = 1, limit = 10, hostName = '', fromDate = '', toDate = '', hostId) => {
+const getHostHolidaysService = async (page = 1, limit = 10, hostName = '', fromDate = '', toDate = '', hostId, userId) => {
     const HostHoliday = getHostHolidayModel();
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 10;
@@ -25,6 +25,9 @@ const getHostHolidaysService = async (page = 1, limit = 10, hostName = '', fromD
     }
     if (toDate) {
         where.toDate = { [Op.like]: `%${toDate}%` };
+    }
+    if (userId) {
+        where.userId = { [Op.like]: `%${userId}%` };
     }
     const { count, rows } = await HostHoliday.findAndCountAll({
         where,

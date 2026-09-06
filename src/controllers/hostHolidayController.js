@@ -12,7 +12,7 @@ const getHostHolidayController = async (req, res) => {
             });
         }
         const { page, limit, hostName, fromDate, toDate, hostId } = req.query;
-        const hostHolidays = await getHostHolidaysService(page, limit, hostName, fromDate, toDate, hostId);
+        const hostHolidays = await getHostHolidaysService(page, limit, hostName, fromDate, toDate, hostId, userId);
         res.json(hostHolidays);
     } catch (error) {
         console.error('Error in getHostHoliday Controller:', error.message);
