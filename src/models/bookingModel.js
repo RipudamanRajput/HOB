@@ -1,15 +1,14 @@
 
 const { DataTypes } = require("sequelize");
 const { getSequelize } = require("../config/db");
-const { Customer: getCustomer } = require("./Customer");
-const { Host: getHost } = require("./Host");
+const { Customer: getCustomer } = require("./CustomerModel");
+const { Host: getHost } = require("./HostModel");
 const { bookingType, amenities, bookingStatus, Role } = require("../config/pets");
 
 let Booking = null;
 
 const initializeBooking = () => {
     const sequelize = getSequelize();
-
     const CustomerModel = getCustomer();
     const HostModel = getHost();
 

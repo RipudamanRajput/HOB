@@ -14,7 +14,13 @@ const initializePaymentModel = () => {
         },
         bookingId: {
             type: DataTypes.UUID,
-            allowNull: false
+            allowNull: false,
+            references: {
+                model: "Bookings",
+                key: 'id'
+            },
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE',
         },
         amount: {
             type: DataTypes.DECIMAL(10, 2),
@@ -38,7 +44,20 @@ const initializePaymentModel = () => {
             defaultValue: DataTypes.NOW
         }
     });
+    const BookingModel = sequelize.models?.Bookings;
+    if (BookingModel) {
+        Payment.belongsTo(BookingModel, {
+            foreignKey: 'bookingId',
+            targetKey: 'id',
+            as: 'bookings'
+        });
 
+        BookingModel.hasMany(Payment, {
+            foreignKey: 'bookingId',
+            sourceKey: 'id',
+            as: 'payments'
+        });
+    }
     return Payment;
 };
 

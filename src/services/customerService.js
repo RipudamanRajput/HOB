@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Customer: getCustomer } = require("../models/Customer");
+const { Customer: getCustomer } = require("../models/CustomerModel");
 
 const addCustomerService = async (customerData) => {
     const Customer = getCustomer();

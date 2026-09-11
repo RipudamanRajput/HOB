@@ -1,5 +1,8 @@
 const { User: getUser } = require('../models/User');
-const { Op } = require('sequelize');
+const { Op, fn, col } = require('sequelize');
+const { Customer: getCustomer } = require("../models/CustomerModel");
+const { Booking: getBookingModel } = require('../models/bookingModel');
+const { Host: getHost } = require('../models/HostModel');
 
 const addUser = async (userData) => {
     try {
@@ -12,35 +15,79 @@ const addUser = async (userData) => {
     }
 }
 
-const getUsers = async (page = 1, limit = 10, name = '', email = '') => {
+const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus = '', role = '') => {
     const User = getUser();
+    const Customer = getCustomer();
+    const Booking = getBookingModel();
+    const Host = getHost();
+
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 10;
     const offset = (page - 1) * limit;
 
     const where = {};
-    if (name) {
-        where.name = { [Op.like]: `%${name}%` };
-    }
-    if (email) {
-        where.email = { [Op.like]: `%${email}%` };
-    }
+    if (name) where.name = { [Op.like]: `%${name}%` };
+    if (email) where.email = { [Op.like]: `%${email}%` };
+    if (role) where.role = { [Op.eq]: `${role}`};
 
-    const { count, rows } = await User.findAndCountAll({
+    // host include - if hostStatus provided, make it a required include with where
+    const hostInclude = hostStatus
+      ? { model: Host, as: 'host', attributes: ['id', 'status'], required: true, where: { status: hostStatus } }
+      : { model: Host, as: 'host', attributes: ['id', 'status'], required: false };
+
+    const users = await User.findAll({
         where,
+        include: [
+            {
+                model: Customer,
+                as: 'customer',
+                attributes: [],
+                required: false,
+                include: [
+                    {
+                        model: Booking,
+                        as: 'bookings',
+                        attributes: []
+                    }
+                ]
+            },
+            hostInclude
+        ],
+        attributes: [
+            'id',
+            'name',
+            'email',
+            'role',
+            'createdAt',
+            [fn('COUNT', col('customer->bookings.id')), 'bookingCount'],
+            [col('host.status'), 'hostStatus']
+        ],
+        group: hostStatus ? ['User.id', 'host.id', 'host.status'] : ['User.id', 'host.id', 'host.status'],
         limit,
         offset,
-        attributes: ['id', 'name', 'email']
+        subQuery: false
+    });
+
+    // total should respect hostStatus filter
+    const countInclude = hostStatus ? [hostInclude] : [];
+    const total = await User.count({ where, include: countInclude, distinct: true });
+
+    const data = users.map(u => {
+        const obj = u.toJSON();
+        obj.bookingCount = parseInt(obj.bookingCount || 0, 10);
+        obj.hostStatus = obj.hostStatus ?? (obj.host ? obj.host.status : null);
+        if (!obj.host) delete obj.host;
+        return obj;
     });
 
     return {
-        data: rows,
-        total: count,
-        page: page,
-        limit: limit,
-        totalPages: Math.ceil(count / limit)
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
     };
-}
+};
 
 const getUserById = async (userId) => {
     const User = getUser();

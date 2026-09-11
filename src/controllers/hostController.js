@@ -1,6 +1,6 @@
 const { getHostsService, addHostService, getHostByIdService, getHostByUserIDService, getHostForAdminsService, updateHostService, updateHostPropertyService } = require("../services/hostService");
 const { updateUserRoleService } = require("../services/userService");
-const { Host: getHost } = require("../models/Host");
+const { Host: getHost } = require("../models/HostModel");
 const { HostHoliday: getHostHolidayModel } = require('../models/HostHolidayModel');
 const { Op } = require("sequelize");
 

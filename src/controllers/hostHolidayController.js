@@ -3,7 +3,7 @@ const { getHostByUserIDService } = require("../services/hostService");
 
 const getHostHolidayController = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user.id;
         const host = await getHostByUserIDService(userId);
         if (!host) {
             return res.status(400).json({
@@ -26,7 +26,7 @@ const getHostHolidayController = async (req, res) => {
 const getHostHolidayByIdController = async (req, res) => {
     try {
         // const hostHolidayId = req.params.id;
-        const { userId } = req.params;
+        const userId = req.user.id;
         const host = await getHostByUserIDService(userId);
         if (!host) {
             return res.status(400).json({
@@ -53,7 +53,7 @@ const getHostHolidayByIdController = async (req, res) => {
 
 const postHostHolidayController = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user.id;
         const host = await getHostByUserIDService(userId);
         if (!host) {
             return res.status(400).json({

@@ -1,19 +1,22 @@
 const express = require('express');
 
 const authMiddleware = require('../middleware/authMiddleware');
-const { userIDValidation, IDValidation } = require('../middleware/userIDValidation');
 const { userIDParamSchema } = require('../schemas/userSchema');
 const { payloadValidation } = require('../middleware/payloadValidation');
 const { createBookingSchema } = require('../schemas/bookingSchema');
-const { getBookingByIdController, postBookingController, getBookingController, updateBookingStatusController, cancelBookingController } = require('../controllers/bookingController');
+const { getBookingByIdController, postBookingController, getBookingController, updateBookingStatusController, cancelBookingController, getAllBookingsController } = require('../controllers/bookingController');
+const { AdminRoleCheck } = require('../middleware/RoleCHeck');
 
 const bookingRoutes = express.Router();
-bookingRoutes.get('/get/:id', authMiddleware, IDValidation(userIDParamSchema), userIDValidation(userIDParamSchema), getBookingByIdController);
-bookingRoutes.post('/add', authMiddleware, userIDValidation(userIDParamSchema), payloadValidation(createBookingSchema), postBookingController);
-bookingRoutes.get('/get', authMiddleware, userIDValidation(userIDParamSchema), getBookingController);
-bookingRoutes.put('/cancel/:id', authMiddleware, IDValidation(userIDParamSchema), userIDValidation(userIDParamSchema), cancelBookingController);
+bookingRoutes.get('/get', authMiddleware, getBookingController);
+bookingRoutes.get('/get/:id', authMiddleware, getBookingByIdController);
+bookingRoutes.post('/add', authMiddleware, payloadValidation(createBookingSchema), postBookingController);
+bookingRoutes.put('/cancel/:id', authMiddleware, cancelBookingController);
 
 // to update the status of booking by CRON
 bookingRoutes.get('/update/status-job', updateBookingStatusController);
+
+//for admin use only
+bookingRoutes.get('/admin/get', authMiddleware, AdminRoleCheck, getAllBookingsController);
 
 module.exports = { bookingRoutes };

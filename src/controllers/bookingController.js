@@ -1,4 +1,5 @@
-const { getBookingService, getBookingByIdService, addBookingService, updateBookingStatusByTimeService, cancelBookingService } = require("../services/bookingService");
+const { success } = require("zod");
+const { getBookingService, getBookingByIdService, addBookingService, updateBookingStatusByTimeService, cancelBookingService, getAllBookingService } = require("../services/bookingService");
 const { getHostByIdService, getHostByUserIDService } = require("../services/hostService");
 const { getPetProfileByIdService } = require("../services/petProfileService");
 const { getUserById } = require("../services/userService");
@@ -6,7 +7,8 @@ const { getUserById } = require("../services/userService");
 
 const getBookingController = async (req, res) => {
     try {
-        const { page, limit, userId, status } = req.query;
+        const { page, limit, status } = req.query;
+        const userId = req.user.id;
         const bookings = await getBookingService(page, limit, userId, status);
         res.json(bookings);
     } catch (error) {
@@ -30,7 +32,7 @@ const getBookingByIdController = async (req, res) => {
 };
 
 const postBookingController = async (req, res) => {
-    const { userId } = req.params;
+    const  userId  = req.user.id;
     try {
         req.body.userId = userId;
         const hostResponse = await getHostByUserIDService(userId);
@@ -191,4 +193,27 @@ const cancelBookingController = async (req, res) => {
     }
 };
 
-module.exports = { getBookingController, getBookingByIdController, postBookingController, updateBookingStatusController, cancelBookingController }
+// *****************  for admin use only *****************
+const getAllBookingsController = async (req, res) => {
+    try {
+        const { page, limit, status } = req.query;
+        const bookings = await getAllBookingService(page, limit, null, status);
+        res.json(bookings);
+    } catch (error) {
+        console.error('Error in getAllBookings controller:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+            error: error.message
+        });
+    }
+}
+
+module.exports = {
+    getBookingController,
+    getBookingByIdController,
+    postBookingController,
+    updateBookingStatusController,
+    cancelBookingController,
+    getAllBookingsController
+}

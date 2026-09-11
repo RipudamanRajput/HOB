@@ -2,7 +2,7 @@ const { addCustomerService, getCustomersService, getCustomerByIdService } = requ
 
 
 const addCustomer = async (req, res) => {
-    const { userId } = req.params;
+    const  userId  = req.user.id;
     req.body.userId = userId;
     try {
         const customerId = await addCustomerService(req.body);

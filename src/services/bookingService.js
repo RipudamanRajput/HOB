@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const { Booking: getBookingModel } = require('../models/bookingModel');
-
+const { PetProfile: getPetProfileModel } = require('../models/petProfileModel');
+const { getPaymentModel } = require('../models/paymentModel');
 
 const addBookingService = async (bookingData) => {
     const Booking = getBookingModel();
@@ -49,26 +50,12 @@ const getBookingByIdService = async (BookingId) => {
 const updateBookingStatusByTimeService = async () => {
     try {
         const Booking = getBookingModel();
-
         const now = new Date();
         console.log('Booking status cron run at: ' + now);
-
-        // Start of today: 00:00:00
         const startOfToday = new Date(now);
         startOfToday.setHours(0, 0, 0, 0);
-
-        // Start of tomorrow: 00:00:00
         const startOfTomorrow = new Date(startOfToday);
         startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
-
-        /**
-         * 1. Change today's bookings to RUNNING
-         *
-         * Conditions:
-         * - checkIn is today
-         * - checkIn time has arrived
-         * - status is not cancelled/completed/running
-         */
         const [runningUpdated] = await Booking.update(
             {
                 status: 'running'
@@ -90,14 +77,6 @@ const updateBookingStatusByTimeService = async () => {
                 }
             }
         );
-
-        /**
-         * 2. Change RUNNING bookings to COMPLETED
-         *
-         * Condition:
-         * - status is running
-         * - checkout date/time has passed
-         */
         const [completedUpdated] = await Booking.update(
             {
                 status: 'completed'
@@ -111,18 +90,15 @@ const updateBookingStatusByTimeService = async () => {
                 }
             }
         );
-
         console.log('Booking status cron completed:', {
             runningUpdated,
             completedUpdated,
             currentTime: now
         });
-
         return {
             runningUpdated,
             completedUpdated
         };
-
     } catch (error) {
         console.error(
             'Error updating booking statuses:',
@@ -152,4 +128,95 @@ const cancelBookingService = async (cancellationData) => {
     return updatedBooking;
 };
 
-module.exports = { addBookingService, getBookingService, getBookingByIdService, updateBookingStatusByTimeService, cancelBookingService }
+// ************ for admin use only ************
+const getAllBookingService = async (
+    page = 1,
+    limit = 10,
+    userId = '',
+    status = '') => {
+    const Booking = getBookingModel();
+    const PetProfile = getPetProfileModel();
+    const Payment = getPaymentModel();
+    // console.log(Object.keys(Booking.associations)); 
+    // console.log(Object.keys(Payment.associations));
+
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const where = {};
+    if (userId) {
+        where.userId = { [Op.like]: `%${userId}%` };
+    }
+    if (status) {
+        where.status = { [Op.like]: `%${status}%` };
+    }
+    const { count, rows } = await Booking.findAndCountAll({
+        where,
+        include: [
+            {
+                association: Booking.associations.customer,
+                attributes: [
+                    "name"
+                ]
+            },
+            {
+                association: Booking.associations.host,
+                attributes: [
+                    "propertyName"
+                ]
+            }
+        ],
+        limit,
+        attributes: [
+            "id",
+            "checkIn",
+            "checkOut",
+            "status",
+            "petIds",
+        ],
+        offset,
+        distinct: true
+    });
+
+    const data = await Promise.all(
+        rows.map(async (booking) => {
+            const bookingData = booking.toJSON();
+            let pets = [];
+            if (Array.isArray(bookingData.petIds) && bookingData.petIds.length) {
+                pets = await PetProfile.findAll({
+                    where: { id: { [Op.in]: bookingData.petIds } },
+                    attributes: ['id', 'petName', 'name']
+                });
+            }
+            const amount = await Payment.findOne({
+                where: { bookingId: bookingData.id },
+                attributes: ['amount']
+            });
+
+            return {
+                ...bookingData,
+                pets: pets.map(p => ({ name: p.petName || p.name })),
+                petIds: undefined,
+                amount: amount?.amount || null
+            };
+        })
+    );
+
+    return {
+        data: data,
+        total: count,
+        page: page,
+        limit: limit,
+        totalPages: Math.ceil(count / limit)
+    };
+}
+
+module.exports = {
+    addBookingService,
+    getBookingService,
+    getBookingByIdService,
+    updateBookingStatusByTimeService,
+    cancelBookingService,
+    getAllBookingService
+}

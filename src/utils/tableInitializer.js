@@ -1,6 +1,6 @@
 const { initializeBooking } = require('../models/bookingModel');
-const { initializeCustomer } = require('../models/Customer');
-const { initializeHost } = require('../models/Host');
+const { initializeCustomer } = require('../models/CustomerModel');
+const { initializeHost } = require('../models/HostModel');
 const { initializeHostHolidayModel } = require('../models/HostHolidayModel');
 const { initializePaymentModel } = require('../models/paymentModel');
 const { initializePetProfileModel } = require('../models/petProfileModel');

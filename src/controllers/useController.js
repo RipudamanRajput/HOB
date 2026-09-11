@@ -10,14 +10,18 @@ const generateToken = (user) => {
         { expiresIn } // Access token expires in 24 hour
     );
 };
+
 const getUsers = async (req, res) => {
     try {
-        const { page, limit, name, email } = req.query;
-        const users = await getUsersService(page, limit, name, email);
+        const { page, limit, name, email, hostStatus, role } = req.query;
+        const users = await getUsersService(page, limit, name, email, hostStatus, role);
         res.json({ users });
     } catch (error) {
         console.error('Error in getUsers:', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        });
     }
 };
 

@@ -27,7 +27,7 @@ const getPetProfileByIdController = async (req, res) => {
 };
 
 const postPetProfileController = async (req, res) => {
-    const { userId } = req.params;
+    const userId = req.user.id;
     req.body.userId = userId;
     try {
         const petProfileId = await addPetProfileService(req.body);

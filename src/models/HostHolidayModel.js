@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { getSequelize } = require("../config/db");
-const { Host: getHost } = require('./Host');
+const { Host: getHost } = require('./HostModel');
 
 
 let HostHolidayModel = null;
@@ -86,7 +86,7 @@ const initializeHostHolidayModel = () => {
                 }
             }
         });
-    HostHolidayModel.belongsTo(Host, { foreignKey: "hostId", as: "host", });
+    HostHolidayModel.belongsTo(Host, { foreignKey: "hostId", as: "hostHoliday", });
     Host.hasMany(HostHolidayModel, { foreignKey: "hostId", as: "HostHolidays", });
     return HostHolidayModel;
 }

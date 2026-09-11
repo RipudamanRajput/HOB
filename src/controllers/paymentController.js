@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const { createPaymentOrder, fetchPaymentDetails } = require('../services/razorpay/razorpayService');
-const { addPaymentService, updatePaymentService } = require('../services/paymentService');
+const { addPaymentService, updatePaymentService, getAllPaymentsService } = require('../services/paymentService');
 
 const createOrder = async (req, res) => {
     try {
@@ -37,7 +37,6 @@ const createOrder = async (req, res) => {
 
     }
 };
-
 
 const verifyPayment = async (req, res) => {
     try {
@@ -90,7 +89,29 @@ const verifyPayment = async (req, res) => {
     }
 };
 
+// ************ for admin use only ***********
+const getAllPayments = async (req, res) => {
+    try {
+        const { page, limit } = req.query;
+        const payments = await getAllPaymentsService(page, limit);
+        return res.status(200).json({
+            success: true,
+            message: 'Payments fetched successfully',
+            data: payments
+        });
+    }
+    catch (error) {
+        console.error('Error in getAllPayments controller:', error.message);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     createOrder,
-    verifyPayment
+    verifyPayment,
+    getAllPayments
 };

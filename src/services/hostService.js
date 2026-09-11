@@ -1,6 +1,6 @@
 
 const { Op, Sequelize } = require('sequelize');
-const { Host: getHost } = require('../models/Host');
+const { Host: getHost } = require('../models/HostModel');
 
 
 const addHostService = async (hostData) => {
