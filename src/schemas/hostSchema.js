@@ -4,10 +4,11 @@ const { PetTypes, amenities, bussinessType, property, propertyAreaType, hostStat
 const AmenitiesEnum = z.enum(amenities);
 
 const adminUpdateHostSchema = z.object({
-    status: z.enum(hostStatus),
+    status: z.enum(hostStatus).optional(),
     accountSuspendReason: z.string().optional(),
     topRated: z.boolean().optional(),
-    mostPopullar: z.boolean().optional()
+    mostPopullar: z.boolean().optional(),
+    physicalverification: z.boolean.optional()
 });
 
 const updateHostSchema = z.object({
