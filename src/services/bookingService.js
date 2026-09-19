@@ -175,6 +175,7 @@ const getAllBookingService = async (
             "checkOut",
             "status",
             "petIds",
+            "cancellationReason",
             "createdAt"
         ],
         offset,

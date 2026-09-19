@@ -22,6 +22,7 @@ const getAllPaymentsService = async (page = 1, limit = 10) => {
     const offset = (page - 1) * limit;
     const { count, rows } = await Payment.findAndCountAll({
         limit,
+        order: [['createdAt', 'DESC']],
         offset
     });
 
