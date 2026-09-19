@@ -43,6 +43,10 @@ const initializeHost = () => {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },
+        physicalverification: {
+            type: DataTypes.BOOLEAN,
+            default: false
+        },
         propertyName: {
             type: DataTypes.STRING,
             unique: false,

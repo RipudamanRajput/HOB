@@ -16,6 +16,7 @@ const updateHostService = async (req, res) => {
         status,
         accountSuspendReason,
         topRated,
+        physicalverification,
         mostPopullar
     } = req.body;
 
@@ -33,8 +34,12 @@ const updateHostService = async (req, res) => {
         updateData.topRated = topRated;
     }
 
-    if (mostPopullar !== undefined) {
-        updateData.mostPopullar = mostPopullar;
+    if (topRated !== undefined) {
+        updateData.topRated = topRated;
+    }
+
+    if (physicalverification !== undefined) {
+        updateData.physicalverification = physicalverification;
     }
     const [updatedRows] = await Host.update(updateData, {
         where: { id }
