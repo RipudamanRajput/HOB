@@ -35,6 +35,7 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
         ? { model: Host, as: 'host', attributes: ['id', 'status'], required: true, where: { status: hostStatus } }
         : { model: Host, as: 'host', attributes: ['id', 'status'], required: false };
 
+    // 1. Fetch paginated users list
     const users = await User.findAll({
         where,
         include: [
@@ -63,16 +64,42 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
             [fn('COUNT', col('customer->bookings.id')), 'bookingCount'],
             [col('host.status'), 'hostStatus']
         ],
-        group: hostStatus ? ['User.id', 'host.id', 'host.status'] : ['User.id', 'host.id', 'host.status'],
+        group: ['User.id', 'host.id', 'host.status'],
         limit,
         offset,
         subQuery: false
     });
 
-    // total should respect hostStatus filter
+    // 2. Total matching records count (respecting filters)
     const countInclude = hostStatus ? [hostInclude] : [];
     const total = await User.count({ where, include: countInclude, distinct: true });
 
+    // 3. Role-wise counts aggregation
+    const roleCountsRaw = await User.findAll({
+        where,
+        include: countInclude,
+        attributes: [
+            'role',
+            [fn('COUNT', col('User.id')), 'count']
+        ],
+        group: ['role'],
+        raw: true
+    });
+
+    // Format role counts into a clean object with default zeroes
+    const roleCounts = {
+        customer: 0,
+        host: 0,
+        admin: 0
+    };
+
+    roleCountsRaw.forEach(item => {
+        if (item.role) {
+            roleCounts[item.role] = parseInt(item.count, 10);
+        }
+    });
+
+    // 4. Format response data
     const data = users.map(u => {
         const obj = u.toJSON();
         obj.bookingCount = parseInt(obj.bookingCount || 0, 10);
@@ -84,6 +111,7 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
     return {
         data,
         total,
+        roleCounts, // <-- Added role-wise breakdown here
         page,
         limit,
         totalPages: Math.ceil(total / limit)
