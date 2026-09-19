@@ -167,6 +167,7 @@ const getAllBookingService = async (
                 ]
             }
         ],
+        order: [['createdAt', 'DESC']],
         limit,
         attributes: [
             "id",
@@ -174,6 +175,7 @@ const getAllBookingService = async (
             "checkOut",
             "status",
             "petIds",
+            "createdAt"
         ],
         offset,
         distinct: true
