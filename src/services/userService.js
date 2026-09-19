@@ -28,12 +28,12 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
     const where = {};
     if (name) where.name = { [Op.like]: `%${name}%` };
     if (email) where.email = { [Op.like]: `%${email}%` };
-    if (role) where.role = { [Op.eq]: `${role}`};
+    if (role) where.role = { [Op.eq]: `${role}` };
 
     // host include - if hostStatus provided, make it a required include with where
     const hostInclude = hostStatus
-      ? { model: Host, as: 'host', attributes: ['id', 'status'], required: true, where: { status: hostStatus } }
-      : { model: Host, as: 'host', attributes: ['id', 'status'], required: false };
+        ? { model: Host, as: 'host', attributes: ['id', 'status'], required: true, where: { status: hostStatus } }
+        : { model: Host, as: 'host', attributes: ['id', 'status'], required: false };
 
     const users = await User.findAll({
         where,
@@ -53,6 +53,7 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
             },
             hostInclude
         ],
+        order: [['createdAt', 'DESC']],
         attributes: [
             'id',
             'name',
