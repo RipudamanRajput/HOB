@@ -278,7 +278,9 @@ const getHostsService = async (
             "propertyPhotos",
             "services",
             "pricePerPet",
-
+            "topRated",
+            "mostPopullar",
+            "physicalverification"
         ]
     });
 
