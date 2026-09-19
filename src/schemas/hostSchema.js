@@ -8,7 +8,7 @@ const adminUpdateHostSchema = z.object({
     accountSuspendReason: z.string().optional(),
     topRated: z.boolean().optional(),
     mostPopullar: z.boolean().optional(),
-    physicalverification: z.boolean.optional()
+    physicalverification: z.boolean().optional()
 });
 
 const updateHostSchema = z.object({
