@@ -145,7 +145,7 @@ const updateBookingStatusController = async (req, res) => {
 const cancelBookingController = async (req, res) => {
     try {
         const bookingId = req.params.id;
-        const userId = req.params.userId;
+        const userId = req.user.id;
         const UserResponse = await getUserById(userId);
         const booking = await getBookingByIdService(bookingId);
 
