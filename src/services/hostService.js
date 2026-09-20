@@ -264,6 +264,7 @@ const getHostsService = async (
 
     const { count, rows } = await Host.findAndCountAll({
         where,
+        order: [['createdAt', 'DESC']],
         limit,
         offset,
         attributes: [
@@ -368,6 +369,7 @@ const getHostForAdminsService = async (
 
     const { count, rows } = await Host.findAndCountAll({
         where,
+        order: [['createdAt', 'DESC']],
         limit,
         offset
     });

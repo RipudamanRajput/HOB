@@ -29,6 +29,7 @@ const getBookingService = async (
     const { count, rows } = await Booking.findAndCountAll({
         where,
         limit,
+        order: [['createdAt', 'DESC']],
         offset
     });
 

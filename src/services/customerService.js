@@ -24,6 +24,7 @@ const getCustomersService = async (page = 1, limit = 10, name = '', email = '') 
     const { count, rows } = await Customer.findAndCountAll({
         where,
         limit,
+        order: [['createdAt', 'DESC']],
         offset
     });
 

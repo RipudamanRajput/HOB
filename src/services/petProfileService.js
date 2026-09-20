@@ -25,6 +25,7 @@ const getPetProfilesService = async (page = 1, limit = 10, name = '', email = ''
     }
     const { count, rows } = await PetProfile.findAndCountAll({
         where,
+        order: [['createdAt', 'DESC']],
         limit,
         offset
     });

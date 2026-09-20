@@ -83,6 +83,7 @@ const getHostHolidaysService = async (page = 1, limit = 10, hostName = '', fromD
     }
     const { count, rows } = await HostHoliday.findAndCountAll({
         where,
+        order: [['createdAt', 'DESC']],
         limit,
         offset
     });
