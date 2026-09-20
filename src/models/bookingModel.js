@@ -21,7 +21,6 @@ const initializeBooking = () => {
                 primaryKey: true,
             },
 
-            // Customer who made the booking
             userId: {
                 type: DataTypes.UUID,
                 allowNull: false,
@@ -35,7 +34,6 @@ const initializeBooking = () => {
                 onUpdate: "CASCADE",
             },
 
-            // Host being booked
             hostId: {
                 type: DataTypes.UUID,
                 allowNull: false,
@@ -47,7 +45,6 @@ const initializeBooking = () => {
                 onUpdate: "CASCADE"
             },
 
-            // Multiple pets in one booking
             petIds: {
                 type: DataTypes.JSON,
                 allowNull: false,
@@ -74,13 +71,11 @@ const initializeBooking = () => {
                 },
             },
 
-            // Booking status
             status: {
                 type: DataTypes.ENUM(...bookingStatus),
                 defaultValue: "initiated",
             },
 
-            // Check-in date/time
             checkIn: {
                 type: DataTypes.DATE,
                 allowNull: false,
@@ -102,7 +97,6 @@ const initializeBooking = () => {
                 },
             },
 
-            // Check-out date/time
             checkOut: {
                 type: DataTypes.DATE,
                 allowNull: false,
@@ -124,13 +118,11 @@ const initializeBooking = () => {
                 },
             },
 
-            // Type of booking
             bookingType: {
                 type: DataTypes.ENUM(...bookingType),
                 allowNull: false,
             },
 
-            // Cancellation protection
             cancellationProtection: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
@@ -156,13 +148,11 @@ const initializeBooking = () => {
                 allowNull: true,
             },
 
-            // Additional instructions
             instructions: {
                 type: DataTypes.TEXT,
                 allowNull: true,
             },
 
-            // Selected amenities
             amenities: {
                 type: DataTypes.JSON,
                 allowNull: true,
@@ -214,7 +204,6 @@ const initializeBooking = () => {
         },
 
         {
-            // Model-level validations
             validate: {
                 checkDates() {
                     if (this.checkOut <= this.checkIn) {
@@ -258,6 +247,26 @@ const initializeBooking = () => {
         sourceKey: "id",
         as: "bookings"
     });
+
+    const PaymentModel = sequelize.models?.Payment;
+    if (PaymentModel) {
+        if (!Booking.associations?.payments) {
+            Booking.hasMany(PaymentModel, {
+                foreignKey: 'bookingId',
+                sourceKey: 'id',
+                as: 'payments'
+            });
+        }
+
+        if (!PaymentModel.associations?.booking) {
+            PaymentModel.belongsTo(Booking, {
+                foreignKey: 'bookingId',
+                targetKey: 'id',
+                as: 'booking'
+            });
+        }
+    }
+
     return Booking;
 };
 

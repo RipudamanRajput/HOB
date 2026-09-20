@@ -6,6 +6,11 @@ let Payment = null;
 const initializePaymentModel = () => {
     const sequelize = getSequelize();
 
+    if (sequelize.models?.Payment) {
+        Payment = sequelize.models.Payment;
+        return Payment;
+    }
+
     Payment = sequelize.define('Payment', {
         id: {
             type: DataTypes.UUID,
@@ -26,6 +31,10 @@ const initializePaymentModel = () => {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false
         },
+        ammountSummary: {
+            type: DataTypes.JSON(),
+            allowNull: true
+        },
         status: {
             type: DataTypes.STRING,
             allowNull: true,
@@ -44,20 +53,27 @@ const initializePaymentModel = () => {
             defaultValue: DataTypes.NOW
         }
     });
+
+    // Safely attach associations if Bookings model exists
     const BookingModel = sequelize.models?.Bookings;
     if (BookingModel) {
-        Payment.belongsTo(BookingModel, {
-            foreignKey: 'bookingId',
-            targetKey: 'id',
-            as: 'bookings'
-        });
+        if (!Payment.associations?.booking) {
+            Payment.belongsTo(BookingModel, {
+                foreignKey: 'bookingId',
+                targetKey: 'id',
+                as: 'booking'
+            });
+        }
 
-        BookingModel.hasMany(Payment, {
-            foreignKey: 'bookingId',
-            sourceKey: 'id',
-            as: 'payments'
-        });
+        if (!BookingModel.associations?.payments) {
+            BookingModel.hasMany(Payment, {
+                foreignKey: 'bookingId',
+                sourceKey: 'id',
+                as: 'payments'
+            });
+        }
     }
+
     return Payment;
 };
 

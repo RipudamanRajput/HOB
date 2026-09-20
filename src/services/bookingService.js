@@ -48,6 +48,112 @@ const getBookingByIdService = async (BookingId) => {
     return booking;
 }
 
+// const updateBookingStatusByTimeService = async () => {
+//     try {
+//         const Booking = getBookingModel();
+//         const now = new Date();
+//         console.log('Booking status cron run at: ' + now);
+//         const startOfToday = new Date(now);
+//         startOfToday.setHours(0, 0, 0, 0);
+//         const startOfTomorrow = new Date(startOfToday);
+//         startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+//         const [runningUpdated] = await Booking.update(
+//             {
+//                 status: 'running'
+//             },
+//             {
+//                 where: {
+//                     checkIn: {
+//                         [Op.gte]: startOfToday,
+//                         [Op.lt]: startOfTomorrow,
+//                         [Op.lte]: now
+//                     },
+//                     status: {
+//                         [Op.notIn]: [
+//                             'cancelled',
+//                             'completed',
+//                             'running'
+//                         ]
+//                     }
+//                 }
+//             }
+//         );
+//         const [completedUpdated] = await Booking.update(
+//             {
+//                 status: 'completed'
+//             },
+//             {
+//                 where: {
+//                     status: 'running',
+//                     checkOut: {
+//                         [Op.lte]: now
+//                     }
+//                 }
+//             }
+//         );
+//         console.log('Booking status cron completed:', {
+//             runningUpdated,
+//             completedUpdated,
+//             currentTime: now
+//         });
+//         return {
+//             runningUpdated,
+//             completedUpdated
+//         };
+//     } catch (error) {
+//         console.error(
+//             'Error updating booking statuses:',
+//             error
+//         );
+//         throw error;
+//     }
+// };
+
+const cancelUnpaidBookingsService = async (startOfToday) => {
+    const Booking = getBookingModel();
+    const Payment = getPaymentModel();
+
+    const unpaidBookings = await Booking.findAll({
+        where: {
+            status: {
+                [Op.in]: ['initiated', 'running', 'pending']
+            },
+            checkIn: {
+                [Op.lt]: startOfToday
+            },
+            // 1. Updated from $payment.id$ to $payments.id$
+            '$payments.id$': null 
+        },
+        include: [
+            {
+                model: Payment,
+                // 2. Updated from 'payment' to 'payments'
+                as: 'payments', 
+                required: false,
+                attributes: ['id']
+            }
+        ],
+        attributes: ['id']
+    });
+
+    if (!unpaidBookings.length) {
+        return 0;
+    }
+
+    const unpaidBookingIds = unpaidBookings.map(b => b.id);
+
+    const [cancelledCount] = await Booking.update(
+        { status: 'cancelled' },
+        {
+            where: {
+                id: { [Op.in]: unpaidBookingIds }
+            }
+        }
+    );
+
+    return cancelledCount;
+};
+
 const updateBookingStatusByTimeService = async () => {
     try {
         const Booking = getBookingModel();
@@ -57,6 +163,11 @@ const updateBookingStatusByTimeService = async () => {
         startOfToday.setHours(0, 0, 0, 0);
         const startOfTomorrow = new Date(startOfToday);
         startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+        // 1. Cancel past bookings that had no payment entries created
+        const unpaidCancelled = await cancelUnpaidBookingsService(startOfToday);
+
+        // 2. Update status to 'running' for valid check-ins happening today
         const [runningUpdated] = await Booking.update(
             {
                 status: 'running'
@@ -78,6 +189,8 @@ const updateBookingStatusByTimeService = async () => {
                 }
             }
         );
+
+        // 3. Update status to 'completed' for check-outs that have passed
         const [completedUpdated] = await Booking.update(
             {
                 status: 'completed'
@@ -92,11 +205,13 @@ const updateBookingStatusByTimeService = async () => {
             }
         );
         console.log('Booking status cron completed:', {
+            unpaidCancelled,
             runningUpdated,
             completedUpdated,
             currentTime: now
         });
         return {
+            unpaidCancelled,
             runningUpdated,
             completedUpdated
         };
