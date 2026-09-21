@@ -8,7 +8,11 @@ const getPetProfileController = async (req, res) => {
         res.json(petProfiles);
     } catch (error) {
         console.error('Error in getPetProfile Controller:', error.message);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            error: 'Internal Server Error',
+            success: false,
+            message: error.message
+        });
     }
 };
 
@@ -22,7 +26,11 @@ const getPetProfileByIdController = async (req, res) => {
         res.json(petProfile);
     } catch (error) {
         console.error('Error in getPetProfileById Controller:', error.message);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            error: 'Internal Server Error',
+            success: false,
+            message: error.message
+        });
     }
 };
 

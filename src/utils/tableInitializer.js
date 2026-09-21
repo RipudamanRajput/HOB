@@ -5,6 +5,8 @@ const { initializeHostHolidayModel } = require('../models/HostHolidayModel');
 const { initializePaymentModel } = require('../models/paymentModel');
 const { initializePetProfileModel } = require('../models/petProfileModel');
 const { initializeUser } = require('../models/User');
+const { initializevideosModel } = require('../models/videoModel');
+const { initializeBannersModel } = require('../models/BannersModel');
 
 // this fuction will initialize all the tables in the database
 function tableInitializer() {
@@ -15,6 +17,8 @@ function tableInitializer() {
     initializePetProfileModel();
     initializeBooking();
     initializeHostHolidayModel();
+    initializevideosModel();
+    initializeBannersModel();
 }
 
 module.exports = { tableInitializer };

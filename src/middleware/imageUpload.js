@@ -3,6 +3,7 @@ const streamifier = require("streamifier");
 
 const uploadImageToCloudinary = async (req, res, next) => {
     try {
+        console.log(req)
         if (!req.file) {
             console.log('no image attached')
             return next();
@@ -11,7 +12,7 @@ const uploadImageToCloudinary = async (req, res, next) => {
         const result = await new Promise((resolve, reject) => {
             const stream = cloudinary.uploader.upload_stream(
                 {
-                    folder: "pet-boarding",
+                    folder: "banner",
                     resource_type: "image",
                 },
                 (error, result) => {
@@ -21,9 +22,9 @@ const uploadImageToCloudinary = async (req, res, next) => {
             );
             streamifier.createReadStream(req.file.buffer).pipe(stream);
         });
-        req.body.image = result.secure_url;
+        req.body.url = result.secure_url;
         req.body.imagePublicId = result.public_id;
-        console.log(req.body)
+        console.log(req.body, result)
         next();
     } catch (error) {
         return res.status(500).json({

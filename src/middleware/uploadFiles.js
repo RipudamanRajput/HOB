@@ -51,6 +51,7 @@ const uploadFileforhostverification = (file) => {
 
 const uploadHostfiles = async (req, res, next) => {
     try {
+
         if (!req.files) {
             console.log('no file attached')
             return next();
@@ -100,6 +101,14 @@ const uploadHostfiles = async (req, res, next) => {
                 req.files.businessProof.map(uploadFileforhostverification)
             );
             req.body.businessProof = results.map(file => file.url);
+        }
+
+        // Banner
+        if (req.files.banner?.length) {
+            const results = await Promise.all(
+                req.files.banner.map(uploadFileforhostverification)
+            );
+            req.body.url = results[0].url;
         }
 
         next();
@@ -200,4 +209,47 @@ const updateHostFiles = (req, res, next) => {
     });
 };
 
-module.exports = { uploadHostfiles, handleHostUpload, updateHostFiles };
+const addBannnerFiles = (req, res, next) => {
+    if (!req.files) {
+        // return next();
+    }
+    const uploadHostFiles = upload.fields([
+        { name: 'banner', maxCount: 1 }
+    ]);
+
+    const fileLimits = {
+        banner: 1
+    };
+    uploadHostFiles(req, res, (err) => {
+        if (err) {
+            console.error('Upload error:', err);
+
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+                    const field = err.field;
+
+                    return res.status(400).json({
+                        success: false,
+                        message: `${field} can contain maximum ${fileLimits[field]} files`
+                    });
+                }
+
+                return res.status(400).json({
+                    success: false,
+                    message: err.message
+                });
+            }
+
+            return res.status(500).json({
+                success: false,
+                message: err.message || 'File upload failed'
+            });
+        }
+        if (req.body.data) {
+            req.body = JSON.parse(req.body.data);
+        }
+        next();
+    });
+};
+
+module.exports = { uploadHostfiles, handleHostUpload, updateHostFiles, addBannnerFiles };
