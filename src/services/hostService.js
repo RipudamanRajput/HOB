@@ -34,8 +34,8 @@ const updateHostService = async (req, res) => {
         updateData.topRated = topRated;
     }
 
-    if (topRated !== undefined) {
-        updateData.topRated = topRated;
+    if (mostPopullar !== undefined) {
+        updateData.mostPopullar = mostPopullar;
     }
 
     if (physicalverification !== undefined) {

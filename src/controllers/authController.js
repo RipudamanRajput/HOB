@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { sendHostApprovedEmail } = require('./../services/email/emailService');
-const { getUserById, getUserByEmailService } = require('./../services/userService');
+const { getUserById, getUserByEmailService, updateUserPasswordService } = require('./../services/userService');
 
 const expiresIn = '24h'; // Access token expires in 24 hour
 
@@ -77,6 +77,44 @@ const loginController = async (req, res) => {
     }
 };
 
+const forgetPasswordController = async (req, res) => {
+    const OTP = "123456"
+    try {
+        const user = req.body;
+        if (OTP !== user.otp) {
+            return res.status(404).json({
+                success: false,
+                message: 'Invalid OTP',
+            });
+        }
+        const userdetails = await getUserByEmailService(user.email);
+        if (!userdetails) {
+            return res.status(404).json({
+                success: false,
+                message: 'Authentication failed',
+            });
+        }
+        if (user.newPassword !== user.confirmPassword) {
+            return res.status(404).json({
+                success: false,
+                message: 'new password doest not match with conform password',
+            });
+        }
+        await updateUserPasswordService(user.confirmPassword, userdetails.id)
+
+        return res.status(201).json({
+            message: 'password updated successfully',
+            success: true,
+            userId: userdetails.id,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Authentication failed',
+            error: error.message
+        });
+    }
+};
+
 
 const googleCallback = async (req, res) => {
     try {
@@ -105,4 +143,4 @@ const googleCallback = async (req, res) => {
     }
 };
 
-module.exports = { generateToken, googleCallback, expiresIn, loginController };
+module.exports = { generateToken, googleCallback, expiresIn, loginController, forgetPasswordController };

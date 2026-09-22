@@ -32,8 +32,35 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
 
     // host include - if hostStatus provided, make it a required include with where
     const hostInclude = hostStatus
-        ? { model: Host, as: 'host', attributes: ['id', 'status'], required: true, where: { status: hostStatus } }
-        : { model: Host, as: 'host', attributes: ['id', 'status'], required: false };
+        ? {
+            model: Host,
+            as: 'host',
+            attributes: ['id', 'status'],
+            required: true,
+            where: {
+                status: hostStatus
+            },
+            include: [
+                {
+                    model: Booking,
+                    as: 'bookings',
+                    attributes: []
+                }
+            ]
+        }
+        : {
+            model: Host,
+            as: 'host',
+            attributes: ['id', 'status'],
+            required: false,
+            include: [
+                {
+                    model: Booking,
+                    as: 'bookings',
+                    attributes: []
+                }
+            ]
+        };
 
     // 1. Fetch paginated users list
     const users = await User.findAll({
@@ -61,7 +88,21 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
             'email',
             'role',
             'createdAt',
-            [fn('COUNT', col('customer->bookings.id')), 'bookingCount'],
+            [
+                fn(
+                    'COUNT',
+                    fn('DISTINCT', col('customer->bookings.id'))
+                ),
+                'bookingCount'
+            ],
+
+            [
+                fn(
+                    'COUNT',
+                    fn('DISTINCT', col('host->bookings.id'))
+                ),
+                'hostBookingCount'
+            ],
             [col('host.status'), 'hostStatus']
         ],
         group: ['User.id', 'host.id', 'host.status'],
@@ -143,6 +184,21 @@ const getUserByEmailService = async (email) => {
     });
 };
 
+const updateUserPasswordService = async (password, userId) => {
+    try {
+        const User = getUser();
+
+        const user = await User.findOne({ where: { id: userId } });
+        if (!user) {
+            throw new Error('User not found');
+        }
+        await User.update({ password }, { where: { id: userId } });
+        await user.save();
+    } catch (error) {
+        throw new Error('Error updating user role');
+    }
+}
+
 const updateUserRoleService = async (role, userId) => {
     try {
         const User = getUser();
@@ -160,4 +216,4 @@ const updateUserRoleService = async (role, userId) => {
     }
 }
 
-module.exports = { addUser, getUsers, getUserById, getUserByEmailService, updateUserRoleService };
+module.exports = { addUser, getUsers, getUserById, getUserByEmailService, updateUserPasswordService, updateUserRoleService };

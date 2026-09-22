@@ -250,12 +250,14 @@ const getAllBookingService = async (
     page = 1,
     limit = 10,
     userId = '',
-    status = '') => {
+    status = '',
+    id = '',
+    customerName = '',
+    hostName = ''
+) => {
     const Booking = getBookingModel();
     const PetProfile = getPetProfileModel();
     const Payment = getPaymentModel();
-    // console.log(Object.keys(Booking.associations)); 
-    // console.log(Object.keys(Payment.associations));
 
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 10;
@@ -268,6 +270,9 @@ const getAllBookingService = async (
     if (status) {
         where.status = { [Op.like]: `%${status}%` };
     }
+    if (id) {
+        where.id = { [Op.like]: `%${id}%` };
+    }
     const { count, rows } = await Booking.findAndCountAll({
         where,
         include: [
@@ -275,13 +280,29 @@ const getAllBookingService = async (
                 association: Booking.associations.customer,
                 attributes: [
                     "name"
-                ]
+                ],
+                required: !!customerName,
+                where: customerName
+                    ? {
+                        name: {
+                            [Op.like]: `%${customerName}%`
+                        }
+                    }
+                    : undefined
             },
             {
                 association: Booking.associations.host,
                 attributes: [
                     "propertyName"
-                ]
+                ],
+                required: !!hostName,
+                where: hostName
+                    ? {
+                        propertyName: {
+                            [Op.like]: `%${hostName}%`
+                        }
+                    }
+                    : undefined
             }
         ],
         order: [['createdAt', 'DESC']],
@@ -292,6 +313,7 @@ const getAllBookingService = async (
             "checkOut",
             "status",
             "petIds",
+            "hostId",
             "cancellationReason",
             "createdAt"
         ],
@@ -332,11 +354,157 @@ const getAllBookingService = async (
     };
 }
 
+const getAllBookingOfHost = async (
+    page = 1,
+    limit = 10,
+    hostId = '',
+    status = '',
+    id = '',
+    customerName = '',
+    createdAtFrom = '',
+    createdAtTo = '',
+    checkInFrom = '',
+    checkInTo = '',
+    checkOutFrom = '',
+    checkOutTo = ''
+) => {
+    const Booking = getBookingModel();
+    const PetProfile = getPetProfileModel();
+    const Payment = getPaymentModel();
+
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const where = {};
+
+    if (hostId) {
+        where.hostId = { [Op.like]: `%${hostId}%` };
+    }
+
+    if (status) {
+        where.status = { [Op.like]: `%${status}%` };
+    }
+
+    if (id) {
+        where.id = { [Op.like]: `%${id}%` };
+    }
+
+    // Created At date range
+    if (createdAtFrom || createdAtTo) {
+        where.createdAt = {};
+        if (createdAtFrom) {
+            where.createdAt[Op.gte] = new Date(createdAtFrom);
+        }
+        if (createdAtTo) {
+            const endDate = new Date(createdAtTo);
+            endDate.setHours(23, 59, 59, 999);
+            where.createdAt[Op.lte] = endDate;
+        }
+    }
+
+    // Check In date range
+    if (checkInFrom || checkInTo) {
+        where.checkIn = {};
+        if (checkInFrom) {
+            where.checkIn[Op.gte] = new Date(checkInFrom);
+        }
+        if (checkInTo) {
+            const endDate = new Date(checkInTo);
+            endDate.setHours(23, 59, 59, 999);
+            where.checkIn[Op.lte] = endDate;
+        }
+    }
+
+    // Check Out date range
+    if (checkOutFrom || checkOutTo) {
+        where.checkOut = {};
+        if (checkOutFrom) {
+            where.checkOut[Op.gte] = new Date(checkOutFrom);
+        }
+        if (checkOutTo) {
+            const endDate = new Date(checkOutTo);
+            endDate.setHours(23, 59, 59, 999);
+            where.checkOut[Op.lte] = endDate;
+        }
+    }
+
+    const { count, rows } = await Booking.findAndCountAll({
+        where,
+        include: [
+            {
+                association: Booking.associations.customer,
+                attributes: ['name'],
+                required: !!customerName,
+                where: customerName
+                    ? {
+                        name: {
+                            [Op.like]: `%${customerName}%`
+                        }
+                    }
+                    : undefined
+            },
+            {
+                association: Booking.associations.host,
+                attributes: ['propertyName']
+            }
+        ],
+        order: [['createdAt', 'DESC']],
+        limit,
+        attributes: [
+            'id',
+            'checkIn',
+            'checkOut',
+            'status',
+            'petIds',
+            'cancellationReason',
+            'createdAt'
+        ],
+        offset,
+        distinct: true
+    });
+    const data = await Promise.all(
+        rows.map(async (booking) => {
+            const bookingData = booking.toJSON();
+            let pets = [];
+            if (
+                Array.isArray(bookingData.petIds) &&
+                bookingData.petIds.length
+            ) {
+                pets = await PetProfile.findAll({
+                    where: { id: { [Op.in]: bookingData.petIds } },
+                    attributes: ['id', 'petName', 'name']
+                });
+            }
+
+            const amount = await Payment.findOne({
+                where: { bookingId: bookingData.id },
+                attributes: ['amount']
+            });
+
+            return {
+                ...bookingData,
+                pets: pets.map((p) => ({ name: p.petName || p.name })),
+                petIds: undefined,
+                amount: amount?.amount || null
+            };
+        })
+    );
+    return {
+        data,
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit)
+    };
+};
+
 module.exports = {
     addBookingService,
     getBookingService,
     getBookingByIdService,
     updateBookingStatusByTimeService,
     cancelBookingService,
-    getAllBookingService
+    getAllBookingService,
+    getAllBookingOfHost
 }

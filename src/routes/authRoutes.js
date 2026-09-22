@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const { googleCallback, logout, loginController } = require('../controllers/authController');
+const { googleCallback, logout, loginController, forgetPasswordController } = require('../controllers/authController');
 
 const authRoutes = express.Router();
 
@@ -25,6 +25,7 @@ authRoutes.get(
 );
 
 authRoutes.post('/login', loginController)
+authRoutes.put('/forgetpassword', forgetPasswordController)
 
 
 module.exports = authRoutes;

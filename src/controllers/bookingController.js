@@ -1,5 +1,5 @@
 const { success } = require("zod");
-const { getBookingService, getBookingByIdService, addBookingService, updateBookingStatusByTimeService, cancelBookingService, getAllBookingService } = require("../services/bookingService");
+const { getBookingService, getBookingByIdService, addBookingService, updateBookingStatusByTimeService, cancelBookingService, getAllBookingService, getAllBookingOfHost } = require("../services/bookingService");
 const { getHostByIdService, getHostByUserIDService } = require("../services/hostService");
 const { getPetProfileByIdService } = require("../services/petProfileService");
 const { getUserById } = require("../services/userService");
@@ -32,7 +32,7 @@ const getBookingByIdController = async (req, res) => {
 };
 
 const postBookingController = async (req, res) => {
-    const  userId  = req.user.id;
+    const userId = req.user.id;
     try {
         req.body.userId = userId;
         const hostResponse = await getHostByUserIDService(userId);
@@ -196,11 +196,67 @@ const cancelBookingController = async (req, res) => {
 // *****************  for admin use only *****************
 const getAllBookingsController = async (req, res) => {
     try {
-        const { page, limit, status } = req.query;
-        const bookings = await getAllBookingService(page, limit, null, status);
+        const { page,
+            limit,
+            status,
+            id,
+            customerName,
+            hostName } = req.query;
+        const bookings = await getAllBookingService(
+            page,
+            limit,
+            null,
+            status,
+            id,
+            customerName,
+            hostName);
         res.json(bookings);
     } catch (error) {
         console.error('Error in getAllBookings controller:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+            error: error.message
+        });
+    }
+}
+
+const getAllBookingsOfHostController = async (req, res) => {
+    try {
+        const hostId = req.params.hostId;
+        if (!hostId) {
+            return res.status(400).json({
+                success: false,
+                message: "hostId is required"
+            })
+        }
+        const { page,
+            limit,
+            status,
+            id,
+            customerName,
+            createdAtFrom,
+            createdAtTo,
+            checkInFrom,
+            checkInTo,
+            checkOutFrom,
+            checkOutTo } = req.query;
+        const bookings = await getAllBookingOfHost(
+            page,
+            limit,
+            hostId,
+            status,
+            id,
+            customerName,
+            createdAtFrom,
+            createdAtTo,
+            checkInFrom,
+            checkInTo,
+            checkOutFrom,
+            checkOutTo);
+        res.json(bookings);
+    } catch (error) {
+        console.error('Error in getAllBookings of a host controller:', error.message);
         res.status(500).json({
             success: false,
             message: 'Internal Server Error',
@@ -215,5 +271,6 @@ module.exports = {
     postBookingController,
     updateBookingStatusController,
     cancelBookingController,
-    getAllBookingsController
+    getAllBookingsController,
+    getAllBookingsOfHostController
 }

@@ -4,7 +4,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const { userIDParamSchema } = require('../schemas/userSchema');
 const { payloadValidation } = require('../middleware/payloadValidation');
 const { createBookingSchema } = require('../schemas/bookingSchema');
-const { getBookingByIdController, postBookingController, getBookingController, updateBookingStatusController, cancelBookingController, getAllBookingsController } = require('../controllers/bookingController');
+const { getBookingByIdController, postBookingController, getBookingController, updateBookingStatusController, cancelBookingController, getAllBookingsController, getAllBookingsOfHostController } = require('../controllers/bookingController');
 const { AdminRoleCheck } = require('../middleware/RoleCHeck');
 
 const bookingRoutes = express.Router();
@@ -18,5 +18,6 @@ bookingRoutes.get('/update/status-job', updateBookingStatusController);
 
 //for admin use only
 bookingRoutes.get('/admin/get', authMiddleware, AdminRoleCheck, getAllBookingsController);
+bookingRoutes.get('/admin/get_a_host_bookings/:hostId', authMiddleware, AdminRoleCheck, getAllBookingsOfHostController);
 
 module.exports = { bookingRoutes };

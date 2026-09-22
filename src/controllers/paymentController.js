@@ -92,8 +92,16 @@ const verifyPayment = async (req, res) => {
 // ************ for admin use only ***********
 const getAllPayments = async (req, res) => {
     try {
-        const { page, limit } = req.query;
-        const payments = await getAllPaymentsService(page, limit);
+        const { page, limit,
+            orderId,
+            paymentId,
+            bookingId,
+            status
+        } = req.query;
+        const payments = await getAllPaymentsService(page, limit, orderId,
+            paymentId,
+            bookingId,
+            status);
         return res.status(200).json({
             success: true,
             message: 'Payments fetched successfully',
