@@ -122,13 +122,13 @@ const cancelUnpaidBookingsService = async (startOfToday) => {
                 [Op.lt]: startOfToday
             },
             // 1. Updated from $payment.id$ to $payments.id$
-            '$payments.id$': null 
+            '$payments.id$': null
         },
         include: [
             {
                 model: Payment,
                 // 2. Updated from 'payment' to 'payments'
-                as: 'payments', 
+                as: 'payments',
                 required: false,
                 attributes: ['id']
             }
@@ -144,6 +144,7 @@ const cancelUnpaidBookingsService = async (startOfToday) => {
 
     const [cancelledCount] = await Booking.update(
         { status: 'cancelled' },
+        { cancellationReason: 'payment not received from customer' },
         {
             where: {
                 id: { [Op.in]: unpaidBookingIds }
