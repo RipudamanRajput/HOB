@@ -34,7 +34,7 @@ authRoutes.post('/send-otp', (req, res) => {
     }
   return  res.json({
         message: "OTP send successfully",
-        success: false
+        success: true
     })
 })
 authRoutes.put('/forgetpassword', forgetPasswordController)

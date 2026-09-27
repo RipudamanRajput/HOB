@@ -11,7 +11,7 @@ bannerRoutes.post('/add',
     addBannnerFiles,
     uploadHostfiles,
     addBannerController)
-bannerRoutes.get('/get', authMiddleware, getBannerController)
+bannerRoutes.get('/get',  getBannerController)
 bannerRoutes.put('/delete/:id', authMiddleware, deleteBannerController)
 
 module.exports = { bannerRoutes };
