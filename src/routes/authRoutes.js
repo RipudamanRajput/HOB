@@ -19,12 +19,24 @@ authRoutes.get('/google', (req, res, next) => {
 });
 
 authRoutes.get(
-  '/callback',
-  passport.authenticate('google', { failureRedirect: '/api/auth/login-failed' }),
-  googleCallback
+    '/callback',
+    passport.authenticate('google', { failureRedirect: '/api/auth/login-failed' }),
+    googleCallback
 );
 
 authRoutes.post('/login', loginController)
+authRoutes.post('/send-otp', (req, res) => {
+    if (!req.body.email) {
+        res.status(400).json({
+            message: "email is need",
+            success: false
+        })
+    }
+    res.json({
+        message: "OTP send successfully",
+        success: false
+    })
+})
 authRoutes.put('/forgetpassword', forgetPasswordController)
 
 
