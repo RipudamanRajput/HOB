@@ -27,12 +27,12 @@ authRoutes.get(
 authRoutes.post('/login', loginController)
 authRoutes.post('/send-otp', (req, res) => {
     if (!req.body.email) {
-        res.status(400).json({
+       return res.status(400).json({
             message: "email is need",
             success: false
         })
     }
-    res.json({
+  return  res.json({
         message: "OTP send successfully",
         success: false
     })
