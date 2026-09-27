@@ -17,11 +17,9 @@ const initializePassport = () => {
         try {
           const User = getUser();
           const Customer = getCustomer();
-          // Check if user exists
           let user = await User.findOne({ where: { googleId: profile.id } });
 
           if (!user) {
-            // Create new user if doesn't exist
             user = await User.create({
               googleId: profile.id,
               email: profile.emails[0].value,

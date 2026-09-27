@@ -234,7 +234,6 @@ const getHostsService = async (
             )
         );
 
-        // Match ANY pet type
         where[Op.and].push({
             [Op.or]: petConditions
         });

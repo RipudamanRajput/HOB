@@ -192,11 +192,9 @@ const initializeHost = () => {
             allowNull: true,
             validate: {
                 isValidSizeOfCages(value) {
-                    // Allow null or undefined
                     if (value === null || value === undefined) {
                         return;
                     }
-                    // Must be an array if value is provided
                     if (!Array.isArray(value)) {
                         throw new Error("sizeOfCages must be an array.");
                     }

@@ -8,7 +8,6 @@ const { initializeUser } = require('../models/User');
 const { initializevideosModel } = require('../models/videoModel');
 const { initializeBannersModel } = require('../models/BannersModel');
 
-// this fuction will initialize all the tables in the database
 function tableInitializer() {
     initializeUser();
     initializeCustomer();

@@ -14,7 +14,6 @@ const payloadValidation  = (schema) => (req, res, next) => {
                 errors:errors
             });
         }
-        // req.body = result.data;
         return next();
     } catch (error) {
         console.error('Error in payloadValidation middleware:', error.message);

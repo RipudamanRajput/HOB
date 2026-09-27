@@ -70,9 +70,6 @@ const verifyPayment = async (req, res) => {
             status: payment.status
         });
 
-        // PAYMENT VERIFIED
-        // Update booking payment status here
-
         return res.status(200).json({
             success: true,
             message: 'Payment verified successfully',

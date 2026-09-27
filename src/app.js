@@ -17,7 +17,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// Session middleware
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
@@ -29,11 +28,9 @@ app.use(session({
     }
 }));
 
-// Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Initialize passport on first request
 app.use((req, res, next) => {
     if (!passportInitialized) {
         try {

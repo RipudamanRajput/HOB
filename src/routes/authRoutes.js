@@ -4,11 +4,6 @@ const { googleCallback, logout, loginController, forgetPasswordController } = re
 
 const authRoutes = express.Router();
 
-// Google OAuth routes
-// authRoutes.get(
-//   '/google',
-//   passport.authenticate('google', { scope: ['profile', 'email'] })
-// );
 authRoutes.get('/google', (req, res, next) => {
     const redirectUrl = req.query.redirectUrl;
 

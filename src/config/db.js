@@ -35,12 +35,10 @@ const parseConnectionUri = (uri) => {
 };
 
 const initializePool = async () => {
-    // Prevent multiple simultaneous initialization attempts
     if (initializingPromise) {
         return initializingPromise;
     }
 
-    // If sequelize already exists, return it
     if (sequelize) {
         return sequelize;
     }
@@ -53,13 +51,12 @@ const initializePool = async () => {
             const config = parseConnectionUri(uri);
             sequelize = new Sequelize(config);
             
-            // Test connection
             await sequelize.authenticate();
             console.log('✓ Database connection established successfully');
             return sequelize;
         } catch (error) {
             console.error('✗ Failed to initialize database connection:', error.message);
-            initializingPromise = null; // Reset on failure so it can retry
+            initializingPromise = null; 
             throw error;
         }
     })();

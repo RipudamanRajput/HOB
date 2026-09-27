@@ -25,7 +25,6 @@ const getHostHolidayController = async (req, res) => {
 
 const getHostHolidayByIdController = async (req, res) => {
     try {
-        // const hostHolidayId = req.params.id;
         const userId = req.user.id;
         const host = await getHostByUserIDService(userId);
         if (!host) {

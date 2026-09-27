@@ -12,7 +12,6 @@ const setupDatabase = async () => {
 
         console.log('✓ Connected!');
 
-        // Create users table
         await connection.execute(`
             CREATE TABLE IF NOT EXISTS users (
                 id CHAR(36) PRIMARY KEY,

@@ -9,15 +9,11 @@ let initialized = false;
 
 module.exports = async (req, res) => {
     try {
-        // Initialize only once
         if (!initialized) {
             console.log('🔄 Initializing database and models...');
 
             await initializePool();
             console.log('✓ Database connection established');
-
-            // console.log('Initializing SMTP server');
-            // await initiateSMTP()
 
             tableInitializer();
             console.log('✓ Models initialized');
@@ -25,7 +21,6 @@ module.exports = async (req, res) => {
             initializePassport();
             console.log('✓ Passport initialized');
 
-            // Sync database (won't drop tables if force: false)
             const sequelize = getSequelize();
             await sequelize.sync({ alter: process.env.NODE_ENV !== 'production', force: false });
             console.log('✓ Database synced');
@@ -33,7 +28,6 @@ module.exports = async (req, res) => {
             initialized = true;
         }
 
-        // Handle the request through Express
         return app(req, res);
     } catch (error) {
         console.error('❌ API Error:', error.message);

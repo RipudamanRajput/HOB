@@ -54,7 +54,6 @@ const initializePaymentModel = () => {
         }
     });
 
-    // Safely attach associations if Bookings model exists
     const BookingModel = sequelize.models?.Bookings;
     if (BookingModel) {
         if (!Payment.associations?.booking) {

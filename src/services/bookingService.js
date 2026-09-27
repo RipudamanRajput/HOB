@@ -48,67 +48,6 @@ const getBookingByIdService = async (BookingId) => {
     return booking;
 }
 
-// const updateBookingStatusByTimeService = async () => {
-//     try {
-//         const Booking = getBookingModel();
-//         const now = new Date();
-//         console.log('Booking status cron run at: ' + now);
-//         const startOfToday = new Date(now);
-//         startOfToday.setHours(0, 0, 0, 0);
-//         const startOfTomorrow = new Date(startOfToday);
-//         startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
-//         const [runningUpdated] = await Booking.update(
-//             {
-//                 status: 'running'
-//             },
-//             {
-//                 where: {
-//                     checkIn: {
-//                         [Op.gte]: startOfToday,
-//                         [Op.lt]: startOfTomorrow,
-//                         [Op.lte]: now
-//                     },
-//                     status: {
-//                         [Op.notIn]: [
-//                             'cancelled',
-//                             'completed',
-//                             'running'
-//                         ]
-//                     }
-//                 }
-//             }
-//         );
-//         const [completedUpdated] = await Booking.update(
-//             {
-//                 status: 'completed'
-//             },
-//             {
-//                 where: {
-//                     status: 'running',
-//                     checkOut: {
-//                         [Op.lte]: now
-//                     }
-//                 }
-//             }
-//         );
-//         console.log('Booking status cron completed:', {
-//             runningUpdated,
-//             completedUpdated,
-//             currentTime: now
-//         });
-//         return {
-//             runningUpdated,
-//             completedUpdated
-//         };
-//     } catch (error) {
-//         console.error(
-//             'Error updating booking statuses:',
-//             error
-//         );
-//         throw error;
-//     }
-// };
-
 const cancelUnpaidBookingsService = async (startOfToday) => {
     const Booking = getBookingModel();
     const Payment = getPaymentModel();
@@ -121,13 +60,11 @@ const cancelUnpaidBookingsService = async (startOfToday) => {
             checkIn: {
                 [Op.lt]: startOfToday
             },
-            // 1. Updated from $payment.id$ to $payments.id$
             '$payments.id$': null
         },
         include: [
             {
                 model: Payment,
-                // 2. Updated from 'payment' to 'payments'
                 as: 'payments',
                 required: false,
                 attributes: ['id']
@@ -165,10 +102,8 @@ const updateBookingStatusByTimeService = async () => {
         const startOfTomorrow = new Date(startOfToday);
         startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
 
-        // 1. Cancel past bookings that had no payment entries created
         const unpaidCancelled = await cancelUnpaidBookingsService(startOfToday);
 
-        // 2. Update status to 'running' for valid check-ins happening today
         const [runningUpdated] = await Booking.update(
             {
                 status: 'running'
@@ -191,7 +126,6 @@ const updateBookingStatusByTimeService = async () => {
             }
         );
 
-        // 3. Update status to 'completed' for check-outs that have passed
         const [completedUpdated] = await Booking.update(
             {
                 status: 'completed'
@@ -390,7 +324,6 @@ const getAllBookingOfHost = async (
         where.id = { [Op.like]: `%${id}%` };
     }
 
-    // Created At date range
     if (createdAtFrom || createdAtTo) {
         where.createdAt = {};
         if (createdAtFrom) {
@@ -403,7 +336,6 @@ const getAllBookingOfHost = async (
         }
     }
 
-    // Check In date range
     if (checkInFrom || checkInTo) {
         where.checkIn = {};
         if (checkInFrom) {
@@ -416,7 +348,6 @@ const getAllBookingOfHost = async (
         }
     }
 
-    // Check Out date range
     if (checkOutFrom || checkOutTo) {
         where.checkOut = {};
         if (checkOutFrom) {

@@ -30,7 +30,6 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
     if (email) where.email = { [Op.like]: `%${email}%` };
     if (role) where.role = { [Op.eq]: `${role}` };
 
-    // host include - if hostStatus provided, make it a required include with where
     const hostInclude = hostStatus
         ? {
             model: Host,
@@ -62,7 +61,6 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
             ]
         };
 
-    // 1. Fetch paginated users list
     const users = await User.findAll({
         where,
         include: [
@@ -111,11 +109,9 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
         subQuery: false
     });
 
-    // 2. Total matching records count (respecting filters)
     const countInclude = hostStatus ? [hostInclude] : [];
     const total = await User.count({ where, include: countInclude, distinct: true });
 
-    // 3. Role-wise counts aggregation
     const roleCountsRaw = await User.findAll({
         where,
         include: countInclude,
@@ -127,7 +123,6 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
         raw: true
     });
 
-    // Format role counts into a clean object with default zeroes
     const roleCounts = {
         customer: 0,
         host: 0,
@@ -140,7 +135,6 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
         }
     });
 
-    // 4. Format response data
     const data = users.map(u => {
         const obj = u.toJSON();
         obj.bookingCount = parseInt(obj.bookingCount || 0, 10);
@@ -152,7 +146,7 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
     return {
         data,
         total,
-        roleCounts, // <-- Added role-wise breakdown here
+        roleCounts,
         page,
         limit,
         totalPages: Math.ceil(total / limit)

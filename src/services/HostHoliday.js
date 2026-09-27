@@ -2,11 +2,6 @@ const { Op } = require('sequelize');
 const { HostHoliday: getHostHolidayModel } = require('../models/HostHolidayModel');
 
 
-// const addHostHolidayService = async (hostHolidayData) => {
-//     const HostHoliday = getHostHolidayModel();
-//     const hostHoliday = await HostHoliday.create(hostHolidayData);
-//     return hostHoliday.id;
-// }
 
 const addHostHolidayService = async (holidayData) => {
     const HostHoliday = getHostHolidayModel();
@@ -22,7 +17,6 @@ const addHostHolidayService = async (holidayData) => {
     const startDate = new Date(fromDate);
     const endDate = new Date(toDate);
 
-    // Check for overlapping holiday
     const existingHoliday = await HostHoliday.findOne({
         where: {
             hostId,

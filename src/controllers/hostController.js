@@ -160,9 +160,6 @@ const updateHostHolidayStatusService = async (req, res) => {
     const now = new Date();
     console.log('Host holiday status cron run at: ' + now);
     try {
-        // =====================================================
-        // 1. FIND CURRENTLY ACTIVE HOLIDAYS
-        // =====================================================
         const activeHolidays = await HostHoliday.findAll({
             where: {
                 fromDate: {
@@ -180,9 +177,6 @@ const updateHostHolidayStatusService = async (req, res) => {
             ]
         });
 
-        // =====================================================
-        // 2. SUSPEND VERIFIED HOSTS
-        // =====================================================
         let suspendedCount = 0;
         for (const holiday of activeHolidays) {
             const [updatedRows] = await Host.update(
@@ -202,9 +196,6 @@ const updateHostHolidayStatusService = async (req, res) => {
             suspendedCount += updatedRows;
         }
 
-        // =====================================================
-        // 3. FIND EXPIRED HOLIDAYS
-        // =====================================================
         const expiredHolidays = await HostHoliday.findAll({
             where: {
                 toDate: {
@@ -216,9 +207,6 @@ const updateHostHolidayStatusService = async (req, res) => {
             ]
         });
 
-        // =====================================================
-        // 4. VERIFY HOSTS WHO WERE SUSPENDED FOR HOLIDAY
-        // =====================================================
         let verifiedCount = 0;
         for (const holiday of expiredHolidays) {
             const [updatedRows] = await Host.update(

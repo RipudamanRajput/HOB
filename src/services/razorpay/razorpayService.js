@@ -4,7 +4,6 @@ const createPaymentOrder = async ({
     amount,
     bookingId
 }) => {
-    // Razorpay expects amount in paise
     const amountInPaise = Math.round(Number(amount) * 100);
 
     if (!amountInPaise || amountInPaise <= 0) {

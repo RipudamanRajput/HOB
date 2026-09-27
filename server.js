@@ -12,32 +12,24 @@ const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
     try {
-        // Initialize database connection first
         console.log('Initializing database connection...');
         await initializePool();
         console.log('✓ Database connection established');
 
-        // SMTP server
-        // console.log('Initializing SMTP server');
-        // await initiateSMTP()
-
-        // Initialize User model
         console.log('Initializing models...');
         tableInitializer();
         console.log('✓ Models initialized');
 
-        // Initialize Passport strategies
         console.log('Initializing Passport strategies...');
         initializePassport();
         console.log('✓ Passport initialized');
 
-        // Sync Sequelize models with database
         console.log('Syncing models with database...');
         const sequelize = getSequelize();
 
         await sequelize.sync({
-            force: false,  // Never force in production!
-            alter: process.env.NODE_ENV === 'development'  // Only alter in development
+            force: false,  
+            alter: process.env.NODE_ENV === 'development'  
         });
         console.log('✓ Database models synced');
 

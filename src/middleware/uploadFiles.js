@@ -57,7 +57,6 @@ const uploadHostfiles = async (req, res, next) => {
             return next();
         }
 
-        // NOC
         if (req.files.noc?.length) {
             const results = await Promise.all(
                 req.files.noc.map(uploadFileforhostverification)
@@ -65,7 +64,6 @@ const uploadHostfiles = async (req, res, next) => {
             req.body.noc = results.map(file => file.url);
         }
 
-        // ID Proof
         if (req.files.idProof?.length) {
             const results = await Promise.all(
                 req.files.idProof.map(uploadFileforhostverification)
@@ -73,7 +71,6 @@ const uploadHostfiles = async (req, res, next) => {
             req.body.idProof = results.map(file => file.url);
         }
 
-        // Address Proof
         if (req.files.addressProof?.length) {
             const results = await Promise.all(
                 req.files.addressProof.map(uploadFileforhostverification)
@@ -81,7 +78,6 @@ const uploadHostfiles = async (req, res, next) => {
             req.body.addressProof = results.map(file => file.url);
         }
 
-        // Property Photos (Multiple)
         if (req.files.propertyPhotos?.length) {
             const results = await Promise.all(
                 req.files.propertyPhotos.map(uploadFileHostGallery)
@@ -92,10 +88,8 @@ const uploadHostfiles = async (req, res, next) => {
                 ...(Array.isArray(existingPhotos) ? existingPhotos : [existingPhotos]),
                 ...results.map(file => file.url)
             ];
-            // req.body.propertyPhotos = results.map(file => file.url);
         }
 
-        // businessProof (Multiple)
         if (req.files.businessProof?.length) {
             const results = await Promise.all(
                 req.files.businessProof.map(uploadFileforhostverification)
@@ -103,7 +97,6 @@ const uploadHostfiles = async (req, res, next) => {
             req.body.businessProof = results.map(file => file.url);
         }
 
-        // Banner
         if (req.files.banner?.length) {
             const results = await Promise.all(
                 req.files.banner.map(uploadFileforhostverification)
