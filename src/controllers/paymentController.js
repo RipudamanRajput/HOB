@@ -9,7 +9,12 @@ const createOrder = async (req, res) => {
             ammountSummary,
             bookingId
         } = req.body;
-
+        if (!amount || !ammountSummary) {
+            return res.status(400).json({
+                success: false,
+                message: 'Amount and amountSummary are required'
+            });
+        }
         const order = await createPaymentOrder({
             amount,
             bookingId
