@@ -6,6 +6,7 @@ const createOrder = async (req, res) => {
     try {
         const {
             amount,
+            ammountSummary,
             bookingId
         } = req.body;
 
@@ -17,7 +18,8 @@ const createOrder = async (req, res) => {
         await addPaymentService({
             orderId: order.id,
             bookingId,
-            amount
+            amount,
+            ammountSummary
         });
 
         res.status(200).json({
