@@ -43,7 +43,7 @@ const startServer = async () => {
     }
 };
 
-startServer();
+startServer(); 
 
 process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
