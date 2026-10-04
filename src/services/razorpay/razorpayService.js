@@ -4,24 +4,28 @@ const createPaymentOrder = async ({
     amount,
     bookingId
 }) => {
-    const amountInPaise = Math.round(Number(amount) * 100);
+    try {
+        const amountInPaise = Math.round(Number(amount) * 100);
 
-    if (!amountInPaise || amountInPaise <= 0) {
-        throw new Error('Invalid payment amount');
-    }
-
-    const options = {
-        amount: amountInPaise,
-        currency: 'INR',
-        receipt: `booking_${bookingId}`.slice(0, 40),
-        notes: {
-            bookingId
+        if (!amountInPaise || amountInPaise <= 0) {
+            throw new Error('Invalid payment amount');
         }
-    };
 
-    const order = await razorpay.orders.create(options);
+        const options = {
+            amount: amountInPaise,
+            currency: 'INR',
+            receipt: `booking_${bookingId}`.slice(0, 40),
+            notes: {
+                bookingId
+            }
+        };
 
-    return order;
+        const order = await razorpay.orders.create(options);
+
+        return order;
+    } catch (error) {
+        throw error;
+    }
 };
 
 const fetchPaymentDetails = async (paymentId) => {

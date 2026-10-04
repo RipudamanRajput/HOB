@@ -9,7 +9,8 @@ const createOrder = async (req, res) => {
             ammountSummary,
             bookingId
         } = req.body;
-        if (!amount || !ammountSummary) {
+
+        if (!amount && !ammountSummary) {
             return res.status(400).json({
                 success: false,
                 message: 'Amount and amountSummary are required'
@@ -19,7 +20,6 @@ const createOrder = async (req, res) => {
             amount,
             bookingId
         });
-
         await addPaymentService({
             orderId: order.id,
             bookingId,
@@ -40,8 +40,11 @@ const createOrder = async (req, res) => {
 
     } catch (error) {
         console.error('Create payment order error:', error);
-        throw error;
-
+        res.status(400).json({
+            success: false,
+            message: 'Failed to create payment order',
+            error: error
+        });
     }
 };
 
