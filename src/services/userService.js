@@ -101,9 +101,10 @@ const getUsers = async (page = 1, limit = 10, name = '', email = '', hostStatus 
                 ),
                 'hostBookingCount'
             ],
-            [col('host.status'), 'hostStatus']
+            [col('host.status'), 'hostStatus'],
+            [col('host.propertyName'), 'propertyName']
         ],
-        group: ['User.id', 'host.id', 'host.status'],
+        group: ['User.id', 'host.id', 'host.status', 'host.propertyName'],
         limit,
         offset,
         subQuery: false
