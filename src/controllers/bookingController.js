@@ -35,13 +35,13 @@ const postBookingController = async (req, res) => {
     const userId = req.user.id;
     try {
         req.body.userId = userId;
-        const hostResponse = await getHostByUserIDService(userId);
-        if (hostResponse && hostResponse.id) {
-            return res.status(400).json({
-                success: false,
-                message: `You are a host and cannot make bookings.`
-            });
-        }
+        // const hostResponse = await getHostByUserIDService(userId);
+        // if (hostResponse && hostResponse.id) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: `You are a host and cannot make bookings.`
+        //     });
+        // }
 
         const { petIds, hostId } = req.body;
         if (!hostId) {
