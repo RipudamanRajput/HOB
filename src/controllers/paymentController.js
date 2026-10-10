@@ -6,11 +6,11 @@ const createOrder = async (req, res) => {
     try {
         const {
             amount,
-            ammountSummary,
+            amountSummary,
             bookingId
         } = req.body;
 
-        if (!amount && !ammountSummary) {
+        if (!amount && !amountSummary) {
             return res.status(400).json({
                 success: false,
                 message: 'Amount and amountSummary are required'
@@ -21,7 +21,7 @@ const createOrder = async (req, res) => {
             bookingId
         });
 
-        console.log('Payment order created:', ammountSummary);
+        console.log('Payment order created:', amountSummary);
 
         await addPaymentService({
             orderId: order.id,
