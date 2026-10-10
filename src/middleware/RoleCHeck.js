@@ -3,6 +3,7 @@ const { getUserById } = require("../services/userService");
 
 const HostRoleCheck = async (req, res, next) => {
     const id = req.user.id;
+    console.log("HostRoleCheck middleware invoked for user ID:", JSON.stringify(req.user)); // Debugging line
 
     const user = await getUserById(id);
 
@@ -24,7 +25,7 @@ const HostRoleCheck = async (req, res, next) => {
 
 const AdminRoleCheck = async (req, res, next) => {
     const id = req.user.id;
-
+    console.log("AdminRoleCheck middleware invoked for user ID:", JSON.stringify(req.user)); // Debugging line
     const user = await getUserById(id);
 
     if (!user) {
@@ -45,7 +46,7 @@ const AdminRoleCheck = async (req, res, next) => {
 
 const CustomerRoleCheck = async (req, res, next) => {
     const id = req.user.id;
-
+    console.log("CustomerRoleCheck middleware invoked for user ID:", JSON.stringify(req.user)); // Debugging line
     const user = await getUserById(id);
 
     if (!user) {

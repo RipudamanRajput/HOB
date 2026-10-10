@@ -9,6 +9,8 @@ paymentRoutes.post('/create-order', createOrder);
 paymentRoutes.post('/verify-payment', verifyPayment);
 
 // *********** for admin use only ***********
-paymentRoutes.get('/admin/get-all-payments', authMiddleware, AdminRoleCheck, getAllPayments);
+paymentRoutes.get('/admin/get-all-payments', authMiddleware,
+     AdminRoleCheck,
+      getAllPayments);
 
 module.exports = { paymentRoutes };
