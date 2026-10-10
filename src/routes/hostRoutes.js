@@ -16,7 +16,7 @@ hostRoutes.get('/get', getHosts);
 hostRoutes.get('/get/:id', getHostById);
 hostRoutes.post('/add',
     authMiddleware,
-    HostRoleCheck,
+    // HostRoleCheck,
     handleHostUpload,
     checkForHost,
     payloadValidation(createHostSchema),
