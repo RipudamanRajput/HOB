@@ -316,9 +316,7 @@ const getHostForAdminsService = async (
 
     if (status) {
         where.status = status;
-    } else {
-        where.status = "verified";
-    }
+    } 
 
     if (address) {
         const searchAddress = String(address)
