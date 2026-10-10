@@ -31,7 +31,7 @@ const initializePaymentModel = () => {
             type: DataTypes.DECIMAL(),
             allowNull: false
         },
-        ammountSummary: {
+        amountSummary: {
             type: DataTypes.JSON(),
             allowNull: true
         },

@@ -27,7 +27,7 @@ const createOrder = async (req, res) => {
             orderId: order.id,
             bookingId,
             amount,
-            ammountSummary
+            amountSummary
         });
 
         res.status(200).json({
