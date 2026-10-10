@@ -2,9 +2,9 @@ const { getUserById } = require("../services/userService");
 
 
 const HostRoleCheck = async (req, res, next) => {
-    const userId = req.user.id;
+    const id = req.user.id;
 
-    const user = await getUserById(userId);
+    const user = await getUserById(id);
 
     if (!user) {
         return res.status(404).json({
@@ -23,9 +23,9 @@ const HostRoleCheck = async (req, res, next) => {
 };
 
 const AdminRoleCheck = async (req, res, next) => {
-    const userId = req.user.id;
+    const id = req.user.id;
 
-    const user = await getUserById(userId);
+    const user = await getUserById(id);
 
     if (!user) {
         return res.status(404).json({
@@ -44,9 +44,9 @@ const AdminRoleCheck = async (req, res, next) => {
 };
 
 const CustomerRoleCheck = async (req, res, next) => {
-    const userId = req.user.id;
+    const id = req.user.id;
 
-    const user = await getUserById(userId);
+    const user = await getUserById(id);
 
     if (!user) {
         return res.status(404).json({
