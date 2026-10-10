@@ -3,9 +3,9 @@ const { getUserById } = require("../services/userService");
 
 const HostRoleCheck = async (req, res, next) => {
     const id = req.user.id;
-    console.log("HostRoleCheck middleware invoked for user ID:", JSON.stringify(req.user)); // Debugging line
-
+    
     const user = await getUserById(id);
+    console.log("HostRoleCheck middleware invoked for user ID:", JSON.stringify(user)); // Debugging line
 
     if (!user) {
         return res.status(404).json({
@@ -25,8 +25,8 @@ const HostRoleCheck = async (req, res, next) => {
 
 const AdminRoleCheck = async (req, res, next) => {
     const id = req.user.id;
-    console.log("AdminRoleCheck middleware invoked for user ID:", JSON.stringify(req.user)); // Debugging line
     const user = await getUserById(id);
+    console.log("AdminRoleCheck middleware invoked for user ID:", JSON.stringify(user)); // Debugging line
 
     if (!user) {
         return res.status(404).json({
@@ -46,8 +46,8 @@ const AdminRoleCheck = async (req, res, next) => {
 
 const CustomerRoleCheck = async (req, res, next) => {
     const id = req.user.id;
-    console.log("CustomerRoleCheck middleware invoked for user ID:", JSON.stringify(req.user)); // Debugging line
     const user = await getUserById(id);
+    console.log("CustomerRoleCheck middleware invoked for user ID:", JSON.stringify(user));
 
     if (!user) {
         return res.status(404).json({

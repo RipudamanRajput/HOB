@@ -8,7 +8,7 @@ const { uploadHostfiles, handleHostUpload, updateHostFiles } = require('../middl
 const { checkForHost } = require('../middleware/checkForHost');
 const { getHostHolidayByIdController, getHostHolidayController, postHostHolidayController } = require('../controllers/hostHolidayController');
 const { createHostHolidaySchema } = require('../schemas/hostHolidaySchema');
-const { HostRoleCheck, AdminRoleCheck } = require('../middleware/RoleCHeck');
+const { HostRoleCheck, AdminRoleCheck, CustomerRoleCheck } = require('../middleware/RoleCHeck');
 
 const hostRoutes = express.Router();
 
@@ -16,7 +16,7 @@ hostRoutes.get('/get', getHosts);
 hostRoutes.get('/get/:id', getHostById);
 hostRoutes.post('/add',
     authMiddleware,
-    HostRoleCheck,
+    CustomerRoleCheck,
     handleHostUpload,
     checkForHost,
     payloadValidation(createHostSchema),
