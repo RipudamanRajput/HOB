@@ -20,6 +20,9 @@ const createOrder = async (req, res) => {
             amount,
             bookingId
         });
+
+        console.log('Payment order created:', ammountSummary);
+
         await addPaymentService({
             orderId: order.id,
             bookingId,
