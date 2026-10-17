@@ -49,47 +49,55 @@ const getBookingByIdService = async (BookingId) => {
 }
 
 const cancelUnpaidBookingsService = async (startOfToday) => {
-    const Booking = getBookingModel();
-    const Payment = getPaymentModel();
+    try {
+        const Booking = getBookingModel();
+        const Payment = getPaymentModel();
 
-    const unpaidBookings = await Booking.findAll({
-        where: {
-            status: {
-                [Op.in]: ['initiated', 'running', 'pending']
-            },
-            checkIn: {
-                [Op.lt]: startOfToday
-            },
-            '$payments.id$': null
-        },
-        include: [
-            {
-                model: Payment,
-                as: 'payments',
-                required: false,
-                attributes: ['id']
-            }
-        ],
-        attributes: ['id']
-    });
-
-    if (!unpaidBookings.length) {
-        return 0;
-    }
-
-    const unpaidBookingIds = unpaidBookings.map(b => b.id);
-
-    const [cancelledCount] = await Booking.update(
-        { status: 'cancelled' },
-        { cancellationReason: 'payment not received from customer' },
-        {
+        const unpaidBookings = await Booking.findAll({
             where: {
-                id: { [Op.in]: unpaidBookingIds }
-            }
-        }
-    );
+                status: {
+                    [Op.in]: ['initiated', 'running', 'pending']
+                },
+                checkIn: {
+                    [Op.lt]: startOfToday
+                },
+                '$payments.id$': null
+            },
+            include: [
+                {
+                    model: Payment,
+                    as: 'payments',
+                    required: false,
+                    attributes: ['id']
+                }
+            ],
+            attributes: ['id']
+        });
 
-    return cancelledCount;
+        if (!unpaidBookings.length) {
+            return 0;
+        }
+
+        const unpaidBookingIds = unpaidBookings.map(b => b.id);
+      
+        const [cancelledCount] = await Booking.update(
+            {
+                status: 'cancelled',
+                cancellationReason: 'payment not received from customer'
+            },
+            {
+                where: {
+                    id: { [Op.in]: unpaidBookingIds }
+                }
+            }
+        );
+
+        return cancelledCount;
+    }
+    catch (error) {
+        console.error('Error in cancelUnpaidBookingsService:', error);
+        throw error;
+    }
 };
 
 const updateBookingStatusByTimeService = async () => {

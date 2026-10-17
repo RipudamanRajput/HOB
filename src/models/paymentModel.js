@@ -28,7 +28,7 @@ const initializePaymentModel = () => {
             onUpdate: 'CASCADE',
         },
         amount: {
-            type: DataTypes.DECIMAL(),
+             type: DataTypes.DECIMAL(12, 3),
             allowNull: false
         },
         amountSummary: {

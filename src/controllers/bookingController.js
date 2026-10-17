@@ -3,6 +3,7 @@ const { getBookingService, getBookingByIdService, addBookingService, updateBooki
 const { getHostByIdService, getHostByUserIDService } = require("../services/hostService");
 const { getPetProfileByIdService } = require("../services/petProfileService");
 const { getUserById } = require("../services/userService");
+const { getHostHolidaysByHostIdService } = require("../services/HostHoliday");
 
 
 const getBookingController = async (req, res) => {
@@ -43,6 +44,48 @@ const postBookingController = async (req, res) => {
         //     });
         // }
 
+        // Host holiday check 
+        const hostHolidays = await getHostHolidaysByHostIdService(req.body.hostId);
+        const checkIn = new Date(req.body.checkIn);
+        const checkOut = new Date(req.body.checkOut);
+
+        if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: "Valid check-in and check-out dates are required."
+            });
+        }
+
+        if (checkIn >= checkOut) {
+            return res.status(400).json({
+                success: false,
+                message: "Check-out date must be after check-in date."
+            });
+        }
+
+        const holidayOverlap = hostHolidays?.find((holiday) => {
+            const holidayFrom = new Date(holiday.fromDate);
+            const holidayTo = new Date(holiday.toDate);
+
+            return (
+                checkIn <= holidayTo &&
+                checkOut >= holidayFrom
+            );
+        });
+
+        if (holidayOverlap) {
+            return res.status(400).json({
+                success: false,
+                message: "Host is on holiday and is not accepting bookings for the selected dates.",
+                holiday: {
+                    fromDate: holidayOverlap.fromDate,
+                    toDate: holidayOverlap.toDate,
+                    reason: holidayOverlap.reason
+                }
+            });
+        }
+
+        // check for host accepts those pet or not 
         const { petIds, hostId } = req.body;
         if (!hostId) {
             return res.status(400).json({

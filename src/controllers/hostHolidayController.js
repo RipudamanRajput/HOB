@@ -25,15 +25,9 @@ const getHostHolidayController = async (req, res) => {
 
 const getHostHolidayByIdController = async (req, res) => {
     try {
-        const userId = req.user.id;
-        const host = await getHostByUserIDService(userId);
-        if (!host) {
-            return res.status(400).json({
-                success: false,
-                error: 'User is not a host'
-            });
-        }
-        const hostHoliday = await getHostHolidaysByHostIdService(host.id);
+        const Id = req.params.id;
+
+        const hostHoliday = await getHostHolidaysByHostIdService(Id);
         if (!hostHoliday) {
             return res.status(404).json({
                 success: false,

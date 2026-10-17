@@ -93,7 +93,8 @@ const getHostHolidaysService = async (page = 1, limit = 10, hostName = '', fromD
 
 const getHostHolidaysByHostIdService = async (hostId) => {
     const HostHoliday = getHostHolidayModel();
-    const row = await HostHoliday.findByPk(hostId);
+    const id = hostId;
+    const row = await HostHoliday.findByPk(id);
     return row;
 }
 

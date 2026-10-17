@@ -116,7 +116,7 @@ const uploadHostfiles = async (req, res, next) => {
 const handleHostUpload = (req, res, next) => {
     const uploadHostFiles = upload.fields([
         { name: 'noc', maxCount: 2 },
-        { name: 'propertyPhotos', maxCount: 3 },
+        { name: 'propertyPhotos', maxCount: 100 },
         { name: 'idProof', maxCount: 2 },
         { name: 'addressProof', maxCount: 2 },
         { name: 'businessProof', maxCount: 3 }
@@ -124,7 +124,7 @@ const handleHostUpload = (req, res, next) => {
 
     const fileLimits = {
         noc: 2,
-        propertyPhotos: 3,
+        propertyPhotos: 100,
         idProof: 2,
         addressProof: 2,
         businessProof: 3
@@ -164,11 +164,11 @@ const updateHostFiles = (req, res, next) => {
         // return next();
     }
     const uploadHostFiles = upload.fields([
-        { name: 'propertyPhotos', maxCount: 3 }
+        { name: 'propertyPhotos', maxCount: 100 }
     ]);
 
     const fileLimits = {
-        propertyPhotos: 3
+        propertyPhotos: 100
     };
     uploadHostFiles(req, res, (err) => {
         if (err) {

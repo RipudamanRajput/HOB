@@ -393,8 +393,7 @@ const getHostByUserIDService = async (userId) => {
             userId: userId
         }
     });
-
-    return host;
+    return host?.dataValues;
 };
 
 module.exports = { addHostService, getHostsService, getHostByIdService, getHostByUserIDService, getHostForAdminsService, updateHostService, updateHostPropertyService };
